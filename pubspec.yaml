@@ -23,6 +23,7 @@ dependencies:
   firebase_ui_auth: ^1.13.1
   google_fonts: ^6.2.0
   cloud_firestore: ^4.15.6
+  lottie: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +36,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/lottie/
 
   # example:
   # fonts:

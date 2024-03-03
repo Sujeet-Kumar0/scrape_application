@@ -40,9 +40,9 @@ class ProfileViewModel extends ChangeNotifier {
   UserProfile getUserProfile() {
     // Fetch the phone number and user email from your API or any other source
     String phoneNumber =
-        "+91 xxxxx xxxxx"; // Replace with your logic to fetch the phone number
+        FirebaseAuth.instance.currentUser?.phoneNumber ?? "+91 xxxxx xxxxx";
     String userEmail =
-        'example@example.com'; // Replace with your logic to fetch the user email
+        FirebaseAuth.instance.currentUser?.email ?? 'example@example.com';
     return UserProfile(phoneNumber: phoneNumber, userEmail: userEmail);
   }
 

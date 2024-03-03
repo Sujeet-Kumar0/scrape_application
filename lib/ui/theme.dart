@@ -7,23 +7,30 @@ final Color secondaryColor = Color(0xFF8353E2);
 
 // Define the text theme
 final TextTheme _textTheme = TextTheme(
-  headline1: GoogleFonts.epilogue(
+  displayLarge: GoogleFonts.epilogue(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: Colors.black, // Adjust as per design
   ),
-  headline2: GoogleFonts.epilogue(
+  titleLarge:GoogleFonts.epilogue(
+    fontWeight: FontWeight.bold,
+    color: Colors.black, // Adjust as per design
+  ) ,
+  displayMedium: GoogleFonts.epilogue(
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: Colors.black, // Adjust as per design
   ),
   // Add more styles for other headings if needed
-  bodyText1: GoogleFonts.inter(
+  bodyLarge: GoogleFonts.inter(
     fontSize: 16,
     color: Colors.black87, // Adjust as per design
   ),
-  bodyText2: GoogleFonts.inter(
+  bodyMedium: GoogleFonts.inter(
     fontSize: 14,
+    color: Colors.black87, // Adjust as per design
+  ),
+  bodySmall: GoogleFonts.inter(
     color: Colors.black87, // Adjust as per design
   ),
 );

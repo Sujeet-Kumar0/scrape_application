@@ -10,6 +10,7 @@ import 'package:scrape_application/ui/profile.dart' as scrape_ui;
 import 'package:scrape_application/ui/rates_screen.dart';
 import 'package:scrape_application/ui/schedule.dart';
 import 'package:scrape_application/ui/theme.dart';
+import 'package:scrape_application/viewmodels/schedule_viewmodel.dart';
 
 import 'firebase_options.dart';
 import 'viewmodels/profile_view_model.dart';
@@ -93,8 +94,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
         ChangeNotifierProvider<RatesScreenViewModel>(
-            create: (context) => RatesScreenViewModel())
-      ],
+            create: (context) => RatesScreenViewModel()),
+      ChangeNotifierProvider(create: (context) => ScheduleViewModel())],
       child: MaterialApp.router(
         title: 'Flutter Demo',
         theme: myTheme,

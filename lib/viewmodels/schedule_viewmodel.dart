@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class ScheduleViewModel extends ChangeNotifier {
-  late String selectedWeight;
+  late String? selectedWeight;
   late DateTime selectedDate;
   late TimeOfDay selectedTime;
-  final List<String> weightOptions = ['<20kg', '20-50kg', '50-100kg', '100kg+'];
+  final List<String> weightOptions = ['<20kg', '20-50kg', '50-100kg', '100-700kg',"700Kg+"];
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController pinCodeController = TextEditingController();
 
   ScheduleViewModel() {
-    selectedWeight = weightOptions[0];
+    selectedWeight = weightOptions.isNotEmpty ? weightOptions[0] : null;
     selectedDate = DateTime.now();
     selectedTime = TimeOfDay.now();
   }
@@ -45,6 +46,12 @@ class ScheduleViewModel extends ChangeNotifier {
   void submitForm() {
     // Implement your form submission logic here
     print('Submitting form...');
+    var orderDetails = OrderDetails(selectedWeight!,selectedDate,selectedTime,Address(addressController.text ,pinCodeController.text));
+    print('Selected Weight: ${orderDetails.selectedWeight}');
+    print('Selected Date: ${orderDetails.selectedDate}');
+    print('Selected Time: ${orderDetails.selectedTime}');
+    print('Address: ${orderDetails.address.address}');
+    print('Pin Code: ${orderDetails.address.pinCode}');
   }
 
   void dispose() {
@@ -52,3 +59,22 @@ class ScheduleViewModel extends ChangeNotifier {
     super.dispose();
   }
 }
+
+
+
+class OrderDetails {
+  String selectedWeight;
+  DateTime selectedDate;
+  TimeOfDay selectedTime;
+  Address address;
+
+  OrderDetails(this.selectedWeight, this.selectedDate, this.selectedTime, this.address);
+}
+
+class Address {
+  String address;
+  String pinCode;
+
+  Address(this.address, this.pinCode);
+}
+

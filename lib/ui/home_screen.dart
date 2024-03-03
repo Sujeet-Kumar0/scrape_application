@@ -322,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 Align(
-                                  alignment: const AlignmentDirectional(0, 0.5),
+                                  alignment: const AlignmentDirectional(0, 0.6),
                                   child:
                                       smooth_page_indicator.SmoothPageIndicator(
                                     controller: _model.pageController2,

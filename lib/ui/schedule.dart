@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../viewmodels/schedule_viewmodel.dart';
@@ -15,10 +16,59 @@ class ScheduleScreen extends StatelessWidget {
   }
 }
 
-class ScheduleView extends StatelessWidget {
+class ScheduleView extends StatefulWidget {
+  @override
+  State<ScheduleView> createState() => _ScheduleViewState();
+}
+
+class _ScheduleViewState extends State<ScheduleView> {
+  late ScheduleViewModel viewModel;
+
+  @override
+  void initState() {
+    viewModel = Provider.of<ScheduleViewModel>(context, listen: false);
+    super.initState();
+  }
+
+  void _showWeightOptions(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Select Weight'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: GridView(
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+              ),
+              children: viewModel.weightOptions
+                  .map((weight) => _buildWeightButton(weight))
+                  .toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildWeightButton(String weight) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ElevatedButton(
+        onPressed: () {
+          viewModel.updateSelectedWeight(weight);
+          Navigator.pop(context); // Close the dialog
+        },
+        child: Text(weight),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<ScheduleViewModel>(context);
+    viewModel = Provider.of<ScheduleViewModel>(context);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
@@ -35,24 +85,14 @@ class ScheduleView extends StatelessWidget {
                   'Estimated Weight',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                subtitle: null,
+                subtitle: Text(viewModel.selectedWeight ?? 'Select weight'),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 20,
                 ),
-                // onChanged: viewModel.updateSelectedWeight,
-                // items: viewModel.weightOptions.map((String value) {
-                //   return DropdownMenuItem<String>(
-                //     value: value,
-                //     child: Text(value),
-                //   );
-                // }).toList(),
-                // decoration: InputDecoration(
-                //   labelText: ,
-                //   border: InputBorder.none,
-                //   contentPadding:
-                //       EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-
+                onTap: () {
+                  _showWeightOptions(context);
+                },
               ),
               Divider(
                 thickness: 1,
@@ -66,7 +106,7 @@ class ScheduleView extends StatelessWidget {
                 ),
                 subtitle: Text(
                   '${viewModel.selectedDate.year}-${viewModel.selectedDate.month}-${viewModel.selectedDate.day}',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
@@ -82,11 +122,11 @@ class ScheduleView extends StatelessWidget {
               ListTile(
                 title: Text(
                   'Select Time',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(
                   '${viewModel.selectedTime.hour}:${viewModel.selectedTime.minute}',
-                  style: Theme.of(context).textTheme.subtitle1,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
@@ -102,7 +142,7 @@ class ScheduleView extends StatelessWidget {
               ListTile(
                 title: Text(
                   'Address',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
@@ -113,7 +153,54 @@ class ScheduleView extends StatelessWidget {
               SizedBox(height: 20),
               // Button to submit the form
               ElevatedButton(
-                onPressed: viewModel.submitForm,
+                onPressed: () => {
+                  viewModel.submitForm,
+                  showModalBottomSheet(
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (BuildContext context) {
+                      return Container(
+                        padding: EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Lottie.asset(
+                              "assets/lottie/1709494803893.json",
+                              // width: 100,
+                              height: 100,
+                              fit: BoxFit.contain,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Thank you for your request!',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Our representatives will soon reach out to you.',
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pop(); // Close the bottom sheet
+                              },
+                              child: Text('Close'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                },
                 child: Text('Submit'),
               ),
             ],
@@ -130,23 +217,143 @@ class ScheduleView extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter Address'),
+          title: Text('Enter Your Pick-Up Details',
+              style: Theme.of(context).textTheme.headlineMedium),
           content: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextField(
+                  // maxLines: 3,
                   controller: viewModel.addressController,
                   decoration: InputDecoration(
-                    labelText: 'Full Address',
+                    label: Text('Enter Address'),
+                    // labelText: "Please Enter Your Full Address",
+                    fillColor: const Color(0xfff6f6f6),
+                    filled: true,
+                    labelStyle: TextStyle(color: Colors.grey[500]),
+                    alignLabelWithHint: true,
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.transparent
+                            //Color(0xff29b973),
+                            )),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Color(0xff29b973),
+                        )),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
                 SizedBox(height: 8),
                 TextField(
+                  controller: viewModel.pinCodeController,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
                   decoration: InputDecoration(
-                    labelText: 'Pin Code',
+                    label: Text('Pin Code'),
+                    // labelText: "Please Enter Your PIN Code",
+                    fillColor: const Color(0xfff6f6f6),
+                    filled: true,
+                    labelStyle: TextStyle(color: Colors.grey[500]),
+                    // alignLabelWithHint: true,
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.transparent
+                            //Color(0xff29b973),
+                            )),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(
+                          color: Color(0xff29b973),
+                        )),
+                    errorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderSide: const BorderSide(color: Colors.red),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 ),
+                SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Divider(
+                      thickness: 1,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    Text("or"),
+                    Divider(
+                      thickness: 1,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                InkWell(
+                  child: Material(
+                    color: Colors.transparent,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFFFFFFF),
+                        boxShadow: const [
+                          BoxShadow(
+                            blurRadius: 3,
+                            color: Color(0x33000000),
+                            offset: Offset(0, 1),
+                          )
+                        ],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Color(0xFFFFFFFF),
+                          width: 0,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Icon(
+                                Icons.edit_location,
+                                // color: FlutterFlowTheme.of(context).secondaryText,
+                                size: 24,
+                              ),
+                            ),
+                            Expanded(
+                              flex: 7,
+                              child: Text(
+                                'Saved Address',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
               ],
             ),
           ),

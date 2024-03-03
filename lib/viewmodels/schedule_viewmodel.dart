@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../model/address_model.dart';
+import '../model/order_detail_model.dart';
+
 class ScheduleViewModel extends ChangeNotifier {
   late String? selectedWeight;
   late DateTime selectedDate;
@@ -60,21 +63,4 @@ class ScheduleViewModel extends ChangeNotifier {
   }
 }
 
-
-
-class OrderDetails {
-  String selectedWeight;
-  DateTime selectedDate;
-  TimeOfDay selectedTime;
-  Address address;
-
-  OrderDetails(this.selectedWeight, this.selectedDate, this.selectedTime, this.address);
-}
-
-class Address {
-  String address;
-  String pinCode;
-
-  Address(this.address, this.pinCode);
-}
 

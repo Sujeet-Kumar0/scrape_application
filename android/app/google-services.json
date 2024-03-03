@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "697152728649",
+    "firebase_url": "https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "scrape-freelance",
+    "storage_bucket": "scrape-freelance.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:697152728649:android:c9d7092e3c27b489ea9998",
+        "android_client_info": {
+          "package_name": "com.example.scrape_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdjQ2SkKNo1d4lDjbmNL4LUkzIism_5Cs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -68,9 +68,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(0, 6, 0, 0),
                             child: Text(
-                              'Your email: ${userProfile.userEmail}',
+                              userProfile.userEmail,
                               textAlign: TextAlign.start,
-                              style: Theme.of(context).textTheme.labelLarge,
+                              style: Theme.of(context).textTheme.labelMedium,
                             ),
                           ),
                         ],
@@ -209,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: RichText(
                     text: TextSpan(
                       text: 'Contact Support @ ',
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: Theme.of(context).textTheme.bodyLarge,
                       children: [
                         TextSpan(
                           text: phoneNumber,

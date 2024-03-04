@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -23,10 +24,14 @@ class ScheduleView extends StatefulWidget {
 
 class _ScheduleViewState extends State<ScheduleView> {
   late ScheduleViewModel viewModel;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  bool isLoggedIn = false;
 
   @override
   void initState() {
     viewModel = Provider.of<ScheduleViewModel>(context, listen: false);
+    checkAuthState();
     super.initState();
   }
 
@@ -64,6 +69,16 @@ class _ScheduleViewState extends State<ScheduleView> {
         child: Text(weight),
       ),
     );
+  }
+
+  Future<void> checkAuthState() async {
+    // Get the current user
+    User? user = _auth.currentUser;
+
+    // Update the isLoggedIn flag based on the authentication state
+    setState(() {
+      isLoggedIn = user != null;
+    });
   }
 
   @override
@@ -105,7 +120,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(
-                  '${viewModel.selectedDate.year}-${viewModel.selectedDate.month}-${viewModel.selectedDate.day}',
+                  viewModel.selectedDate != null
+                      ? '${viewModel.selectedDate?.year}-${viewModel.selectedDate?.month}-${viewModel.selectedDate?.day}'
+                      : 'Select date',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 trailing: Icon(
@@ -125,7 +142,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(
-                  '${viewModel.selectedTime.hour}:${viewModel.selectedTime.minute}',
+                  viewModel.selectedTime != null
+                      ? '${viewModel.selectedTime?.hour}:${viewModel.selectedTime?.minute}'
+                      : 'Select time',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 trailing: Icon(
@@ -148,59 +167,71 @@ class _ScheduleViewState extends State<ScheduleView> {
                   Icons.arrow_forward_ios,
                   size: 20,
                 ),
-                onTap: () => _showAddressDialog(context),
+                onTap: () => showAddressDialog(context),
               ),
               SizedBox(height: 20),
               // Button to submit the form
               ElevatedButton(
-                onPressed: () => {
-                  viewModel.submitForm,
-                  showModalBottomSheet(
-                    context: context,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
-                    ),
-                    builder: (BuildContext context) {
-                      return Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Lottie.asset(
-                              "assets/lottie/1709494803893.json",
-                              // width: 100,
-                              height: 100,
-                              fit: BoxFit.contain,
+                onPressed: isLoggedIn
+                    ? () => {
+                          viewModel.submitForm(),
+                          showModalBottomSheet(
+                            context: context,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
                             ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Thank you for your request!',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            builder: (BuildContext context) {
+                              return Container(
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Lottie.asset(
+                                      "assets/lottie/1709494803893.json",
+                                      // width: 100,
+                                      height: 100,
+                                      fit: BoxFit.contain,
+                                    ),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Thank you for your request!',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Our representatives will soon reach out to you.',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the bottom sheet
+                                      },
+                                      child: Text('Close'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          )
+                        }
+                    : () => {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.errorContainer,
+                            content: Text(
+                              'Please Sign-In to Submit',
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Our representatives will soon reach out to you.',
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // Close the bottom sheet
-                              },
-                              child: Text('Close'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                },
+                            duration: Duration(seconds: 3),
+                          ))
+                        },
                 child: Text('Submit'),
               ),
             ],
@@ -210,7 +241,7 @@ class _ScheduleViewState extends State<ScheduleView> {
     );
   }
 
-  void _showAddressDialog(BuildContext context) {
+  void showAddressDialog(BuildContext context) {
     final viewModel = Provider.of<ScheduleViewModel>(context, listen: false);
 
     showDialog(

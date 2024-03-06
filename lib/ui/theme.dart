@@ -12,10 +12,10 @@ final TextTheme _textTheme = TextTheme(
     fontWeight: FontWeight.bold,
     color: Colors.black, // Adjust as per design
   ),
-  titleLarge:GoogleFonts.epilogue(
+  titleLarge: GoogleFonts.epilogue(
     fontWeight: FontWeight.bold,
     color: Colors.black, // Adjust as per design
-  ) ,
+  ),
   displayMedium: GoogleFonts.epilogue(
     fontSize: 24,
     fontWeight: FontWeight.bold,

@@ -14,16 +14,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  //  final List<String> adImages = [
-  //   'https://picsum.photos/seed/676/600',
-  //   'https://picsum.photos/seed/645/600',
-  //   'https://picsum.photos/seed/143/600',
-  //   // Add more ad images as needed
-  // ];
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
   late HomeViewModel _model;
+
   // late BottomNavigationViewModel _bottomNavigationViewModel;
-  int scrap = 00000000;
+
   @override
   void initState() {
     _model = HomeViewModel();
@@ -134,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 8),
                           child: SizedBox(
                             width: double.infinity,
-                            height: 50,
+                            height: 150,
                             child: Stack(
                               children: [
                                 Padding(
@@ -153,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           imageUrl:
                                               'https://picsum.photos/seed/676/600',
                                           width: 320,
-                                          height: 50,
+                                          height: 150,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -163,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           imageUrl:
                                               'https://picsum.photos/seed/645/600',
                                           width: 320,
-                                          height: 50,
+                                          height: 150,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -173,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           imageUrl:
                                               'https://picsum.photos/seed/143/600',
                                           width: 320,
-                                          height: 50,
+                                          height: 150,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -222,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       Container(
-                        height: 100,
+                        height: 250,
                         decoration: BoxDecoration(
                           boxShadow: const [
                             BoxShadow(
@@ -237,8 +233,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               Theme.of(context).colorScheme.secondary
                             ],
                             stops: const [0, 1],
-                            begin: const AlignmentDirectional(0.31, -1),
-                            end: const AlignmentDirectional(-0.31, 1),
+                            begin: const AlignmentDirectional(1, 1),
+                            end: const AlignmentDirectional(1, -1.31),
                           ),
                           borderRadius: BorderRadius.circular(6),
                           // shape: BoxShape.rectangle,
@@ -249,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text: '$scrap Has been sold',
+                                text: '${_model.scrap} Has been sold',
                               )
                             ],
                           ),
@@ -257,7 +253,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      Expanded(
+/*                      const Text(
+                        "Image Gallery",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Divider(
+                        height: 2,
+                        thickness: 1,
+                        indent: 5,
+                        endIndent: 50,
+                      ),
+                      const SizedBox(height: 10),
+*/
+                      /*Expanded(
                         child: Padding(
                           padding:
                               const EdgeInsetsDirectional.fromSTEB(8, 16, 0, 0),
@@ -357,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
-                      ),
+                      ),*/
                     ],
                   ),
                 ),

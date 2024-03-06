@@ -147,7 +147,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                       : 'Select time',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                trailing: Icon(
+                trailing: const Icon(
                   Icons.arrow_forward_ios,
                   size: 20,
                 ),
@@ -163,7 +163,10 @@ class _ScheduleViewState extends State<ScheduleView> {
                   'Address',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                trailing: Icon(
+                // subtitle: viewModel.addressController.text.isEmpty
+                //     ? Text(viewModel.addressController.text)
+                //     : null,
+                trailing: const Icon(
                   Icons.arrow_forward_ios,
                   size: 20,
                 ),
@@ -177,7 +180,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                           viewModel.submitForm(),
                           showModalBottomSheet(
                             context: context,
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(20)),
                             ),

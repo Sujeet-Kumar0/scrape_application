@@ -8,10 +8,14 @@ class HomeViewModel extends ChangeNotifier {
   late PageController pageController2;
 
   int _pageIndex1 = 0;
+
   int get pageIndex1 => _pageIndex1;
 
   int _pageIndex2 = 0;
+
   int get pageIndex2 => _pageIndex2;
+
+  int scrap = 00000000;
 
   bool get canUnfocus => unfocusNode.canRequestFocus;
 

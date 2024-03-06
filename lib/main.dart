@@ -1,18 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:scrape_application/ui/bottom_navigation.dart';
-import 'package:scrape_application/ui/home_screen.dart';
-import 'package:scrape_application/ui/pickup.dart';
-import 'package:scrape_application/ui/profile.dart' as scrape_ui;
-import 'package:scrape_application/ui/rates_screen.dart';
-import 'package:scrape_application/ui/schedule.dart';
+import 'package:scrape_application/ui/dashboard.dart';
 import 'package:scrape_application/ui/theme.dart';
+import 'package:scrape_application/viewmodels/pickup_viewmodel.dart';
 import 'package:scrape_application/viewmodels/schedule_viewmodel.dart';
 
+
 import 'firebase_options.dart';
+import 'ui/bottom_navigation.dart';
+import 'ui/home_screen.dart';
+import 'ui/pickup.dart';
+import 'ui/rates_screen.dart';
+import 'ui/schedule.dart';
+import 'ui/profile.dart' as scrape_ui;
 import 'viewmodels/profile_view_model.dart';
 import 'viewmodels/rates_screen_model.dart';
 
@@ -29,10 +33,11 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   // static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-  static final _router = GoRouter(initialLocation: '/', routes: [
+  static final _router = GoRouter(initialLocation: kIsWeb ? "/sign-in" : '/', routes: [
     GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
     GoRoute(
       path: "/home",
@@ -54,12 +59,11 @@ class MyApp extends StatelessWidget {
       path: '/profile',
       builder: (context, state) => scrape_ui.ProfileScreen(),
     ),
-    // GoRoute(
-    //   path: '/profile',
-    //   builder: (context, state) => ProfileScreen(
-    //     providers: [EmailAuthProvider()],
-    //   ),
-    // ),
+    if(kIsWeb)
+    GoRoute(
+      path: '/dashboard',
+      builder: (context, state) => Dashboard(),
+    ),
     GoRoute(
       path: '/sign-in',
       builder: (context, state) => SignInScreen(
@@ -76,16 +80,16 @@ class MyApp extends StatelessWidget {
                   actions: [
                     SignedOutAction((context) {
                       Navigator.of(context).pop();
-                    })
+                    },)
                   ],
                 ),
               ),
             );
-          }),
+          },),
         ],
       ),
     )
-  ]);
+  ],);
 
   // This widget is the root of your application.
   @override
@@ -95,14 +99,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
         ChangeNotifierProvider<RatesScreenViewModel>(
             create: (context) => RatesScreenViewModel()),
-      ChangeNotifierProvider(create: (context) => ScheduleViewModel())],
+        ChangeNotifierProvider(create: (context) => ScheduleViewModel()),
+        ChangeNotifierProvider(create: (context) => PickupViewModel()),
+      ],
       child: MaterialApp.router(
         title: 'Flutter Demo',
         theme: myTheme,
-        // ThemeData(
-        //   colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        //   useMaterial3: true,
-        // ),
         routerConfig: _router,
       ),
     );

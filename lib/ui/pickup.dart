@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../model/order_detail_model.dart';
 import '../viewmodels/pickup_viewmodel.dart';
 
 class PickUpScreen extends StatefulWidget {
@@ -16,7 +18,7 @@ class _PickUpScreenState extends State<PickUpScreen>
   @override
   void initState() {
     super.initState();
-    _viewModel = PickupViewModel();
+    _viewModel = Provider.of<PickupViewModel>(context, listen: false);
     _viewModel.init(this);
   }
 
@@ -51,8 +53,8 @@ class _PickUpScreenState extends State<PickUpScreen>
                 child: TabBarView(
                   controller: _viewModel.tabController,
                   children: [
-                    _buildTabContent("Upcoming"),
-                    _buildTabContent("Completed"),
+                    _buildUpcomingContent("Upcoming"),
+                    _buildCompletedContent("Completed"),
                   ],
                 ),
               ),
@@ -64,7 +66,51 @@ class _PickUpScreenState extends State<PickUpScreen>
   }
 
   // Method to build the content of each tab
-  Widget _buildTabContent(String text) {
+  Widget _buildUpcomingContent(String text) {
+    return Visibility(
+      visible: _viewModel.orders.isNotEmpty,
+      replacement: Center(
+        child: Text(
+          'Nothing Here!',
+          style: TextStyle(fontSize: 20), // Change as needed
+        ),
+      ),
+      child: ListView.builder(
+        itemCount: _viewModel.orders.length,
+        itemBuilder: (context, index) {
+          // Retrieve order details at the given index
+          OrderDetails order = _viewModel.orders[index];
+          return Card(
+            elevation: 4,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text('Order #${index + 1}'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Weight: ${order.selectedWeight}'),
+                      Text(
+                          'Date: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
+                      Text(
+                          'Time: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
+                      Text('Address: ${order.address.address}'),
+                      Text('Pin Code: ${order.address.pinCode}'),
+                      Divider(
+                        thickness: 1,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  } // Method to build the content of each tab
+
+  Widget _buildCompletedContent(String text) {
     return Center(
       child: Text(
         'Nothing Here!',

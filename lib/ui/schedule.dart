@@ -86,6 +86,11 @@ class _ScheduleViewState extends State<ScheduleView> {
     viewModel = Provider.of<ScheduleViewModel>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Schedule Your Pick-Up",
+        ),
+      ),
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         top: true,
@@ -98,7 +103,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Estimated Weight',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 subtitle: Text(viewModel.selectedWeight ?? 'Select weight'),
                 trailing: Icon(
@@ -117,7 +122,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Select Date',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 subtitle: Text(
                   viewModel.selectedDate != null
@@ -139,7 +144,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Select Time',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 subtitle: Text(
                   viewModel.selectedTime != null
@@ -161,7 +166,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Address',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 // subtitle: viewModel.addressController.text.isEmpty
                 //     ? Text(viewModel.addressController.text)

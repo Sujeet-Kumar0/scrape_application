@@ -35,6 +35,19 @@ class RatesScreenViewModel extends ChangeNotifier {
     });
   }
 
+  void addItemToDB(ItemData newItem) {
+    firestore.collection('rates').add({
+      'itemName': newItem.itemName,
+      'price': newItem.price,
+      'imageURL': newItem.imageURL,
+    }).then((_) {
+      print('Item added successfully');
+      readDataFromDB(); // Refresh data after adding
+    }).catchError((error) {
+      print('Failed to add item: $error');
+    });
+  }
+
   void performSearch(String searchText) {
     searchText = searchText.trim().toLowerCase();
     filteredItems = items
@@ -44,6 +57,28 @@ class RatesScreenViewModel extends ChangeNotifier {
       empty = "Nothing Found!";
     }
     notifyListeners();
+  }
+
+  void updateItemInDB(ItemData updatedItem) {
+    firestore.collection('rates').doc("updatedItem.id").update({
+      'itemName': updatedItem.itemName,
+      'price': updatedItem.price,
+      'imageURL': updatedItem.imageURL,
+    }).then((_) {
+      print('Item updated successfully');
+      readDataFromDB(); // Refresh data after updating
+    }).catchError((error) {
+      print('Failed to update item: $error');
+    });
+  }
+
+  void deleteItemFromDB(String itemId) {
+    firestore.collection('rates').doc(itemId).delete().then((_) {
+      print('Item deleted successfully');
+      readDataFromDB(); // Refresh data after deletion
+    }).catchError((error) {
+      print('Failed to delete item: $error');
+    });
   }
 
   @override

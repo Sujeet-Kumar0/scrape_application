@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:scrape_application/ui/dashboard.dart';
+import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/theme.dart';
+import 'package:scrape_application/ui/web/orders_screen.dart';
 import 'package:scrape_application/viewmodels/pickup_viewmodel.dart';
 import 'package:scrape_application/viewmodels/schedule_viewmodel.dart';
-
 
 import 'firebase_options.dart';
 import 'ui/bottom_navigation.dart';
@@ -17,6 +17,7 @@ import 'ui/pickup.dart';
 import 'ui/rates_screen.dart';
 import 'ui/schedule.dart';
 import 'ui/profile.dart' as scrape_ui;
+import 'ui/web/rates_update_screen.dart';
 import 'viewmodels/profile_view_model.dart';
 import 'viewmodels/rates_screen_model.dart';
 
@@ -37,59 +38,76 @@ class MyApp extends StatelessWidget {
   // static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
-  static final _router = GoRouter(initialLocation: kIsWeb ? "/sign-in" : '/', routes: [
-    GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
-    GoRoute(
-      path: "/home",
-      builder: (context, state) => HomeScreen(),
-    ),
-    GoRoute(
-      path: '/rates',
-      builder: (context, state) => RatesScreen(),
-    ),
-    GoRoute(
-      path: "/schedule",
-      builder: (context, state) => ScheduleScreen(),
-    ),
-    GoRoute(
-      path: "/pickup",
-      builder: (context, state) => PickUpScreen(),
-    ),
-    GoRoute(
-      path: '/profile',
-      builder: (context, state) => scrape_ui.ProfileScreen(),
-    ),
-    if(kIsWeb)
-    GoRoute(
-      path: '/dashboard',
-      builder: (context, state) => Dashboard(),
-    ),
-    GoRoute(
-      path: '/sign-in',
-      builder: (context, state) => SignInScreen(
-        providers: [EmailAuthProvider()],
-        actions: [
-          AuthStateChangeAction<SignedIn>((context, _) {
-            Navigator.push(
-              context,
-              MaterialPageRoute<ProfileScreen>(
-                builder: (context) => ProfileScreen(
-                  appBar: AppBar(
-                    title: const Text('User Profile'),
-                  ),
-                  actions: [
-                    SignedOutAction((context) {
-                      Navigator.of(context).pop();
-                    },)
-                  ],
-                ),
-              ),
-            );
-          },),
-        ],
+  static final _router = GoRouter(
+    initialLocation: kIsWeb ? "/dashboard" : '/',
+    routes: [
+      GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
+      GoRoute(
+        path: "/home",
+        builder: (context, state) => HomeScreen(),
       ),
-    )
-  ],);
+      GoRoute(
+        path: '/rates',
+        builder: (context, state) => RatesScreen(),
+      ),
+      GoRoute(
+        path: "/schedule",
+        builder: (context, state) => ScheduleScreen(),
+      ),
+      GoRoute(
+        path: "/pickup",
+        builder: (context, state) => PickUpScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => scrape_ui.ProfileScreen(),
+      ),
+      if (kIsWeb)
+        GoRoute(
+          path: '/dashboard',
+          builder: (context, state) => Dashboard(),
+        ),
+      if (kIsWeb)
+        GoRoute(
+          path: "/rates_updater",
+          builder: (context, state) => RatesUpdateScreen(),
+        ),
+      if (kIsWeb)
+        GoRoute(
+          path: "/orders",
+          builder: (context, state) => OrdersScreen(),
+        ),
+      GoRoute(
+        path: '/sign-in',
+        builder: (context, state) => SignInScreen(
+          providers: [EmailAuthProvider()],
+          actions: [
+            AuthStateChangeAction<SignedIn>(
+              (context, _) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<ProfileScreen>(
+                    builder: (context) => ProfileScreen(
+                      appBar: AppBar(
+                        title: const Text('User Profile'),
+                      ),
+                      actions: [
+                        SignedOutAction(
+                          (context) {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      )
+    ],
+  );
 
   // This widget is the root of your application.
   @override
@@ -103,6 +121,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => PickupViewModel()),
       ],
       child: MaterialApp.router(
+        // debugShowCheckedModeBanner: false,
+
         title: 'Flutter Demo',
         theme: myTheme,
         routerConfig: _router,

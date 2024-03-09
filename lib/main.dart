@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:scrape_application/ui/login_screen.dart';
 import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/theme.dart';
 import 'package:scrape_application/ui/web/orders_screen.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final _router = GoRouter(
-    initialLocation: kIsWeb ? "/dashboard" : '/',
+    initialLocation: kIsWeb ? "/dashboard" : '/login',
     routes: [
       GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
       GoRoute(
@@ -78,34 +79,38 @@ class MyApp extends StatelessWidget {
           builder: (context, state) => OrdersScreen(),
         ),
       GoRoute(
-        path: '/sign-in',
-        builder: (context, state) => SignInScreen(
-          providers: [EmailAuthProvider()],
-          actions: [
-            AuthStateChangeAction<SignedIn>(
-              (context, _) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<ProfileScreen>(
-                    builder: (context) => ProfileScreen(
-                      appBar: AppBar(
-                        title: const Text('User Profile'),
-                      ),
-                      actions: [
-                        SignedOutAction(
-                          (context) {
-                            Navigator.of(context).pop();
-                          },
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+        path: "/login",
+        builder: (context, state) => LoginScreen(),
       )
+      // GoRoute(
+      //   path: '/sign-in',
+      //   builder: (context, state) => SignInScreen(
+      //     providers: [EmailAuthProvider()],
+      //     actions: [
+      //       AuthStateChangeAction<SignedIn>(
+      //         (context, _) {
+      //           Navigator.push(
+      //             context,
+      //             MaterialPageRoute<ProfileScreen>(
+      //               builder: (context) => ProfileScreen(
+      //                 appBar: AppBar(
+      //                   title: const Text('User Profile'),
+      //                 ),
+      //                 actions: [
+      //                   SignedOutAction(
+      //                     (context) {
+      //                       Navigator.of(context).pop();
+      //                     },
+      //                   )
+      //                 ],
+      //               ),
+      //             ),
+      //           );
+      //         },
+      //       ),
+      //     ],
+      //   ),
+      // )
     ],
   );
 

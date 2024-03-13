@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
+import '../model/address_model.dart';
+import '../viewmodels/saved_address_viewmodel.dart';
 import '../viewmodels/schedule_viewmodel.dart';
 
 class ScheduleScreen extends StatelessWidget {
@@ -24,7 +26,7 @@ class ScheduleView extends StatefulWidget {
 
 class _ScheduleViewState extends State<ScheduleView> {
   late ScheduleViewModel viewModel;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool isLoggedIn = false;
 
@@ -73,12 +75,18 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   Future<void> checkAuthState() async {
     // Get the current user
-    User? user = _auth.currentUser;
-
-    // Update the isLoggedIn flag based on the authentication state
-    setState(() {
-      isLoggedIn = user != null;
+    // User? user = _auth.currentUser;
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        setState(() {
+          isLoggedIn = true;
+        });
+      }
     });
+    // Update the isLoggedIn flag based on the authentication state
+    // setState(() {
+    //   isLoggedIn = user != null;
+    // });
   }
 
   @override
@@ -168,9 +176,9 @@ class _ScheduleViewState extends State<ScheduleView> {
                   'Address',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                // subtitle: viewModel.addressController.text.isEmpty
-                //     ? Text(viewModel.addressController.text)
-                //     : null,
+                subtitle: viewModel.addressController.text.isNotEmpty
+                    ? Text(viewModel.addressController.text)
+                    : Text("Enter Your Address"),
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
                   size: 20,
@@ -182,63 +190,121 @@ class _ScheduleViewState extends State<ScheduleView> {
               ElevatedButton(
                 onPressed: isLoggedIn
                     ? () => {
-                          viewModel.submitForm(),
-                          showModalBottomSheet(
-                            context: context,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            builder: (BuildContext context) {
-                              return Container(
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: <Widget>[
-                                    Lottie.asset(
-                                      "assets/lottie/1709494803893.json",
-                                      // width: 100,
-                                      height: 100,
-                                      fit: BoxFit.contain,
-                                    ),
-                                    SizedBox(height: 16),
-                                    Text(
-                                      'Thank you for your request!',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Our representatives will soon reach out to you.',
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: 16),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(); // Close the bottom sheet
-                                      },
-                                      child: Text('Close'),
-                                    ),
-                                  ],
+                          checkAuthState(),
+                          if (viewModel.selectedWeight == null ||
+                              viewModel.selectedDate == null ||
+                              viewModel.selectedTime == null ||
+                              viewModel.addressController.text.isEmpty ||
+                              viewModel.pinCodeController.text.isEmpty)
+                            {
+                              // Display bottom sheet if any value is null
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
                                 ),
-                              );
-                            },
-                          )
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Lottie.asset(
+                                          "assets/lottie/Animation - 1709708114299.json",
+                                          // width: 100,
+                                          height: 100,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text(
+                                          'Please fill in all the fields.',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the bottom sheet
+                                          },
+                                          child: Text('Close'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            }
+                          else
+                            {
+                              viewModel.submitForm(),
+                              showModalBottomSheet(
+                                context: context,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(20)),
+                                ),
+                                builder: (BuildContext context) {
+                                  return Container(
+                                    padding: EdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        Lottie.asset(
+                                          "assets/lottie/1709494803893.json",
+                                          // width: 100,
+                                          height: 100,
+                                          fit: BoxFit.contain,
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text(
+                                          'Thank you for your request!',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          'Our representatives will soon reach out to you.',
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(height: 16),
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .pop(); // Close the bottom sheet
+                                          },
+                                          child: Text('Close'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )
+                            }
                         }
                     : () => {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.errorContainer,
-                            content: Text(
-                              'Please Sign-In to Submit',
-                              style: Theme.of(context).textTheme.bodySmall,
+                          checkAuthState(),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.errorContainer,
+                              content: Text(
+                                'Please Sign-In to Submit',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              duration: Duration(seconds: 3),
                             ),
-                            duration: Duration(seconds: 3),
-                          ))
+                          ),
                         },
                 child: Text('Submit'),
               ),
@@ -251,168 +317,227 @@ class _ScheduleViewState extends State<ScheduleView> {
 
   void showAddressDialog(BuildContext context) {
     final viewModel = Provider.of<ScheduleViewModel>(context, listen: false);
-
+    final addressViewModel =
+        Provider.of<AddressViewModel>(context, listen: false);
+    addressViewModel.loadAddresses();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Enter Your Pick-Up Details',
-              style: Theme.of(context).textTheme.headlineMedium),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  // maxLines: 3,
-                  controller: viewModel.addressController,
-                  decoration: InputDecoration(
-                    label: Text('Enter Address'),
-                    // labelText: "Please Enter Your Full Address",
-                    fillColor: const Color(0xfff6f6f6),
-                    filled: true,
-                    labelStyle: TextStyle(color: Colors.grey[500]),
-                    alignLabelWithHint: true,
-                    enabledBorder: OutlineInputBorder(
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Enter Your Pick-Up Details',
+                      style: Theme.of(context).textTheme.headlineMedium),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TextField(
+                    // maxLines: 3,
+                    controller: viewModel.addressController,
+                    decoration: InputDecoration(
+                      label: Text('Enter Address'),
+                      // labelText: "Please Enter Your Full Address",
+                      fillColor: const Color(0xfff6f6f6),
+                      filled: true,
+                      labelStyle: TextStyle(color: Colors.grey[500]),
+                      alignLabelWithHint: true,
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.transparent
+                              //Color(0xff29b973),
+                              )),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xff29b973),
+                          )),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.red),
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent
-                            //Color(0xff29b973),
-                            )),
-                    focusedBorder: OutlineInputBorder(
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.red),
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Color(0xff29b973),
-                        )),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 8),
-                TextField(
-                  controller: viewModel.pinCodeController,
-                  keyboardType: TextInputType.number,
-                  maxLength: 6,
-                  decoration: InputDecoration(
-                    label: Text('Pin Code'),
-                    // labelText: "Please Enter Your PIN Code",
-                    fillColor: const Color(0xfff6f6f6),
-                    filled: true,
-                    labelStyle: TextStyle(color: Colors.grey[500]),
-                    // alignLabelWithHint: true,
-                    enabledBorder: OutlineInputBorder(
+                  SizedBox(height: 8),
+                  TextField(
+                    controller: viewModel.pinCodeController,
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    decoration: InputDecoration(
+                      label: Text('Pin Code'),
+                      // labelText: "Please Enter Your PIN Code",
+                      fillColor: const Color(0xfff6f6f6),
+                      filled: true,
+                      labelStyle: TextStyle(color: Colors.grey[500]),
+                      // alignLabelWithHint: true,
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.transparent
+                              //Color(0xff29b973),
+                              )),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xff29b973),
+                          )),
+                      errorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.red),
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.transparent
-                            //Color(0xff29b973),
-                            )),
-                    focusedBorder: OutlineInputBorder(
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.red),
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(
-                          color: Color(0xff29b973),
-                        )),
-                    errorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.red),
-                      borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Divider(
-                      thickness: 1,
-                      color: Theme.of(context).colorScheme.secondary,
+                  SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      final newAddress = Address(
+                        viewModel.addressController.text,
+                        viewModel.pinCodeController.text,
+                      );
+                      addressViewModel.addAddress(newAddress);
+                    },
+                    child: Text('Save Your Address'),
+                  ),
+                  if (addressViewModel.addresses.length != 0)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Divider(
+                          thickness: 1,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        Text("or"),
+                        Divider(
+                          thickness: 1,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ],
                     ),
-                    Text("or"),
-                    Divider(
-                      thickness: 1,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 8),
-                InkWell(
-                  child: Material(
-                    color: Colors.transparent,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFFFFFFF),
-                        boxShadow: const [
-                          BoxShadow(
-                            blurRadius: 3,
-                            color: Color(0x33000000),
-                            offset: Offset(0, 1),
-                          )
-                        ],
+                  SizedBox(height: 8),
+                  /*
+                  InkWell(
+                    child: Material(
+                      color: Colors.transparent,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: Color(0xFFFFFFFF),
-                          width: 0,
-                        ),
                       ),
-                      child: Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Icon(
-                                Icons.edit_location,
-                                // color: FlutterFlowTheme.of(context).secondaryText,
-                                size: 24,
-                              ),
-                            ),
-                            Expanded(
-                              flex: 7,
-                              child: Text(
-                                'Saved Address',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ),
+                      child: Container(
+                        width: double.infinity,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFFFFFF),
+                          boxShadow: const [
+                            BoxShadow(
+                              blurRadius: 3,
+                              color: Color(0x33000000),
+                              offset: Offset(0, 1),
+                            )
                           ],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Color(0xFFFFFFFF),
+                            width: 0,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Icon(
+                                  Icons.edit_location,
+                                  // color: FlutterFlowTheme.of(context).secondaryText,
+                                  size: 24,
+                                ),
+                              ),
+                              Expanded(
+                                flex: 7,
+                                child: Text(
+                                  'Saved Address',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                  )
+            */
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: addressViewModel.addresses.length,
+                    itemBuilder: (context, index) {
+                      final address = addressViewModel.addresses[index];
+                      return ListTile(
+                        title: Text(address.address),
+                        subtitle: Text(address.pinCode),
+                        onTap: () {
+                          viewModel.addressController.text = address.address;
+                          viewModel.pinCodeController.text = address.pinCode;
+                        },
+                      );
+                    },
                   ),
-                )
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Do something with the entered address
+                          // For now, just print it
+                          print(
+                              'Address: ${viewModel.addressController.text}\nPin Code: ${viewModel.pinCodeController.text}');
+                          viewModel.notifyListeners();
+
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Done'),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Do something with the entered address
-                // For now, just print it
-                print('Address: ${viewModel.addressController.text}');
-                Navigator.of(context).pop();
-              },
-              child: Text('Done'),
-            ),
-          ],
+          // actions: <Widget>[
+          //   TextButton(
+          //     onPressed: () {
+          //       Navigator.of(context).pop();
+          //     },
+          //     child: Text('Cancel'),
+          //   ),
+          //   ElevatedButton(
+          //     onPressed: () {
+          //       // Do something with the entered address
+          //       // For now, just print it
+          //       print('Address: ${viewModel.addressController.text}');
+          //       Navigator.of(context).pop();
+          //     },
+          //     child: Text('Done'),
+          //   ),
+          // ],
         );
       },
     );

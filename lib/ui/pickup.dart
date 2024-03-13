@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scrape_application/utils/pickup_status.dart';
 
+import '../model/address_model.dart';
 import '../model/order_detail_model.dart';
 import '../viewmodels/pickup_viewmodel.dart';
 
@@ -65,57 +68,169 @@ class _PickUpScreenState extends State<PickUpScreen>
     );
   }
 
-  // Method to build the content of each tab
   Widget _buildUpcomingContent(String text) {
-    return Visibility(
-      visible: _viewModel.orders.isNotEmpty,
-      replacement: Center(
-        child: Text(
-          'Nothing Here!',
-          style: TextStyle(fontSize: 20), // Change as needed
-        ),
-      ),
-      child: ListView.builder(
-        itemCount: _viewModel.orders.length,
-        itemBuilder: (context, index) {
-          // Retrieve order details at the given index
-          OrderDetails order = _viewModel.orders[index];
-          return Card(
-            elevation: 4,
-            child: Column(
-              children: [
-                ListTile(
-                  title: Text('Order #${index + 1}'),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Weight: ${order.selectedWeight}'),
-                      Text(
-                          'Date: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
-                      Text(
-                          'Time: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
-                      Text('Address: ${order.address.address}'),
-                      Text('Pin Code: ${order.address.pinCode}'),
-                      Divider(
-                        thickness: 1,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: _viewModel.fetchOrdersStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        final upcomingOrders = snapshot.data!.docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return data.containsKey('status') &&
+              data['status'] == Status.upcoming.name;
+        }).toList();
+
+        if (snapshot.data == null ||
+            snapshot.data!.docs.isEmpty ||
+            upcomingOrders.isEmpty) {
+          return Center(child: Text('Nothing Here!'));
+        } else {
+          return ListView.builder(
+            itemCount: upcomingOrders.length,
+            itemBuilder: (context, index) {
+              final doc = upcomingOrders[index];
+              final data = doc.data() as Map<String, dynamic>;
+              final selectedWeight = data?['selectedWeight'] ?? "";
+              final selectedDateTime =
+                  (data?['selectedDateAndTime'] as Timestamp?)?.toDate();
+              final selectedDateAndTime = selectedDateTime != null
+                  ? TimeOfDay.fromDateTime(selectedDateTime)
+                  : null;
+              final addressJson = data?['address'];
+              final address =
+                  addressJson != null ? Address.fromJson(addressJson) : null;
+              if (selectedDateAndTime == null || address == null) {
+                return SizedBox(); // Skip rendering if necessary data is null
+              }
+              final order = OrderDetails(
+                selectedWeight,
+                selectedDateTime!,
+                selectedDateAndTime,
+                address!,
+              );
+
+              return _buildOrderCard(order, index);
+            },
           );
-        },
-      ),
+        }
+      },
     );
-  } // Method to build the content of each tab
+  }
+
+// Widget _buildUpcomingContent(String text) {
+//   return StreamBuilder<QuerySnapshot>(
+//     stream: _viewModel.fetchOrdersStream().map((snapshot) => snapshot.docs.where((doc) => doc['status'] == ).toList()),
+//     builder: (context, snapshot) {
+//       if (snapshot.connectionState == ConnectionState.waiting) {
+//         return Center(child: CircularProgressIndicator());
+//       } else if (snapshot.hasError) {
+//         return Center(child: Text('Error: ${snapshot.error}'));
+//       } else if (snapshot.data == null || snapshot.data!.isEmpty) {
+//         return Center(child: Text('Nothing Here!'));
+//       } else {
+//               final upcomingOrders = snapshot.data!.docs.where((doc) => doc['status'] == Status.upcoming.name).toList();
+
+//         return ListView.builder(
+
+//           itemCount: snapshot.data!.length,
+//           itemBuilder: (context, index) {
+//             final doc = snapshot.data![index];
+//             final selectedWeight = doc['selectedWeight'] ?? "";
+//             final selectedDateTime = (doc['selectedDateAndTime'] as Timestamp?)?.toDate();
+//             final selectedDateAndTime = selectedDateTime != null ? TimeOfDay.fromDateTime(selectedDateTime) : null;
+//             final addressJson = doc['address'];
+//             final address = addressJson != null ? Address.fromJson(addressJson) : null;
+//             if (selectedDateAndTime == null || address == null) {
+//               return SizedBox(); // Skip rendering if necessary data is null
+//             }
+//             final order = OrderDetails(
+//               selectedWeight,
+//               selectedDateTime!,
+//               selectedDateAndTime,
+//               address!,
+//             );
+//             return _buildOrderCard(order);
+//           },
+//         );
+//       }
+//     },
+//   );
+// }
 
   Widget _buildCompletedContent(String text) {
-    return Center(
-      child: Text(
-        'Nothing Here!',
-        style: TextStyle(fontSize: 20), // Change as needed
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: _viewModel.fetchOrdersStream(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        final completedOrders = snapshot.data!.docs.where((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return data.containsKey('status') &&
+              data['status'] == Status.completed.name;
+        }).toList();
+        if (snapshot.data == null ||
+            snapshot.data!.docs.isEmpty ||
+            completedOrders.isEmpty) {
+          return const Center(child: Text('Nothing Here!'));
+        } else {
+          return ListView.builder(
+            itemCount: completedOrders.length,
+            itemBuilder: (context, index) {
+              final doc = completedOrders[index];
+              final selectedWeight = doc['selectedWeight'] ?? "";
+              final selectedDateTime =
+                  (doc['selectedDateAndTime'] as Timestamp?)?.toDate();
+              final selectedDateAndTime = selectedDateTime != null
+                  ? TimeOfDay.fromDateTime(selectedDateTime)
+                  : null;
+              final addressJson = doc['address'];
+              final address =
+                  addressJson != null ? Address.fromJson(addressJson) : null;
+              if (selectedDateAndTime == null || address == null) {
+                return SizedBox(); // Skip rendering if necessary data is null
+              }
+              final order = OrderDetails(
+                selectedWeight,
+                selectedDateTime!,
+                selectedDateAndTime,
+                address!,
+              );
+              return _buildOrderCard(order, index);
+            },
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildOrderCard(OrderDetails order, index) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text('Order #${index + 1}'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Weight: ${order.selectedWeight}'),
+              Text(
+                  'Date: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
+              Text(
+                  'Time: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
+              Text('Address: ${order.address.address}'),
+              Text('Pin Code: ${order.address.pinCode}'),
+              Divider(
+                thickness: 1,
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

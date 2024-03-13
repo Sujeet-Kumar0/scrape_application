@@ -4,6 +4,8 @@ import '../domain/address_repository.dart';
 import '../model/address_model.dart';
 
 class AddressViewModel extends ChangeNotifier {
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController pinCodeController = TextEditingController();
   final AddressRepository _repository = AddressRepository();
 
   List<Address> _addresses = [];

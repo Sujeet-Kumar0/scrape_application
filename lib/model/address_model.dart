@@ -1,6 +1,6 @@
 class Address {
-  String address;
-  String pinCode;
+  final String address;
+  final String pinCode;
 
   Address(this.address, this.pinCode);
 
@@ -17,4 +17,16 @@ class Address {
       'pinCode': pinCode,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Address &&
+        other.address == address &&
+        other.pinCode == pinCode;
+  }
+
+  @override
+  int get hashCode => address.hashCode ^ pinCode.hashCode;
 }

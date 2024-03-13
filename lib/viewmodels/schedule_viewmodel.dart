@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:scrape_application/utils/pickup_status.dart';
 
 import '../model/address_model.dart';
 import '../model/order_detail_model.dart';
@@ -20,7 +21,7 @@ class ScheduleViewModel extends ChangeNotifier {
   final TextEditingController pinCodeController = TextEditingController();
 
   ScheduleViewModel() {
-    selectedWeight =  null;
+    selectedWeight = null;
     selectedDate = null;
     selectedTime = null;
   }
@@ -61,8 +62,8 @@ class ScheduleViewModel extends ChangeNotifier {
     print('Submitting form...');
     CollectionReference ordersCollection =
         FirebaseFirestore.instance.collection('Orders');
-    var orderDetails = OrderDetails(selectedWeight!, selectedDate!, selectedTime!,
-        Address(addressController.text, pinCodeController.text));
+    var orderDetails = OrderDetails(selectedWeight!, selectedDate!,
+        selectedTime!, Address(addressController.text, pinCodeController.text));
 
     // Create a map representing the order details
     Map<String, dynamic> orderData = {
@@ -73,7 +74,8 @@ class ScheduleViewModel extends ChangeNotifier {
       'address': {
         'address': addressController.text,
         'pinCode': pinCodeController.text,
-      }
+      },
+      'status': Status.upcoming.name
     };
     try {
       // Add the order details to Firestore
@@ -97,6 +99,7 @@ class ScheduleViewModel extends ChangeNotifier {
     selectedTime = null;
     addressController.clear();
     pinCodeController.clear();
+    notifyListeners();
   }
 
   void dispose() {

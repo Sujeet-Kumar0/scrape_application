@@ -55,6 +55,14 @@ class PickupViewModel extends ChangeNotifier {
     }
   }
 
-  void getUpcomingOrders(){}
-  void getCompletedOrders(){}
+  Stream<QuerySnapshot> fetchOrdersStream() {
+    return FirebaseFirestore.instance
+        .collection('Orders')
+        .doc(userId)
+        .collection("order")
+        .snapshots();
+  }
+
+  void getUpcomingOrders() {}
+  void getCompletedOrders() {}
 }

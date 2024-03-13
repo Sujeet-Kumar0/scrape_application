@@ -5,11 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/ui/login_screen.dart';
+import 'package:scrape_application/ui/sign_up.dart';
 import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/theme.dart';
 import 'package:scrape_application/ui/web/orders_screen.dart';
+import 'package:scrape_application/viewmodels/login_viewmodel.dart';
 import 'package:scrape_application/viewmodels/pickup_viewmodel.dart';
+import 'package:scrape_application/viewmodels/saved_address_viewmodel.dart';
 import 'package:scrape_application/viewmodels/schedule_viewmodel.dart';
+import 'package:scrape_application/viewmodels/signup_viewmodel.dart';
 
 import 'firebase_options.dart';
 import 'ui/bottom_navigation.dart';
@@ -40,7 +44,7 @@ class MyApp extends StatelessWidget {
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final _router = GoRouter(
-    initialLocation: kIsWeb ? "/dashboard" : '/login',
+    initialLocation: kIsWeb ? "/dashboard" : '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
       GoRoute(
@@ -81,7 +85,12 @@ class MyApp extends StatelessWidget {
       GoRoute(
         path: "/login",
         builder: (context, state) => LoginScreen(),
-      )
+      ),
+      GoRoute(
+        path: "/sign-up",
+        builder: (context, state) => SignUpScreen(),
+      ),
+
       // GoRoute(
       //   path: '/sign-in',
       //   builder: (context, state) => SignInScreen(
@@ -124,6 +133,9 @@ class MyApp extends StatelessWidget {
             create: (context) => RatesScreenViewModel()),
         ChangeNotifierProvider(create: (context) => ScheduleViewModel()),
         ChangeNotifierProvider(create: (context) => PickupViewModel()),
+        ChangeNotifierProvider(create: (context) => LoginViewModel()),
+        ChangeNotifierProvider(create: (context) => SignupViewModel()),
+        ChangeNotifierProvider(create: (context) => AddressViewModel())
       ],
       child: MaterialApp.router(
         // debugShowCheckedModeBanner: false,

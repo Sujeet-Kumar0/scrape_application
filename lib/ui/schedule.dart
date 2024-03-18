@@ -1,8 +1,11 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
+import '../components/custom_text_field.dart';
 import '../model/address_model.dart';
 import '../viewmodels/saved_address_viewmodel.dart';
 import '../viewmodels/schedule_viewmodel.dart';
@@ -51,7 +54,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                 crossAxisCount: 2,
               ),
               children: viewModel.weightOptions
-                  .map((weight) => _buildWeightButton(weight))
+                  .map((weight) => _buildWeightButton(context, weight))
                   .toList(),
             ),
           ),
@@ -60,15 +63,25 @@ class _ScheduleViewState extends State<ScheduleView> {
     );
   }
 
-  Widget _buildWeightButton(String weight) {
+  Widget _buildWeightButton(BuildContext context, String weight) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ElevatedButton(
-        onPressed: () {
-          viewModel.updateSelectedWeight(weight);
-          Navigator.pop(context); // Close the dialog
-        },
-        child: Text(weight),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width / 3 - 16,
+        child: ElevatedButton(
+          onPressed: () {
+            viewModel.updateSelectedWeight(weight);
+            Navigator.pop(context); // Close the dialog
+          },
+          style: ElevatedButton.styleFrom(
+            padding: EdgeInsets.all(8.0),
+          ),
+          child: Text(
+            weight,
+            textAlign: TextAlign.center,
+            // style: TextStyle(fontSize: 14.0),
+          ),
+        ),
       ),
     );
   }
@@ -111,7 +124,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Estimated Weight',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(viewModel.selectedWeight ?? 'Select weight'),
                 trailing: Icon(
@@ -130,7 +143,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Select Date',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(
                   viewModel.selectedDate != null
@@ -152,7 +165,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Select Time',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: Text(
                   viewModel.selectedTime != null
@@ -174,7 +187,7 @@ class _ScheduleViewState extends State<ScheduleView> {
               ListTile(
                 title: Text(
                   'Address',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 subtitle: viewModel.addressController.text.isNotEmpty
                     ? Text(viewModel.addressController.text)
@@ -331,72 +344,25 @@ class _ScheduleViewState extends State<ScheduleView> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Enter Your Pick-Up Details',
-                      style: Theme.of(context).textTheme.headlineMedium),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  TextField(
-                    // maxLines: 3,
-                    controller: viewModel.addressController,
-                    decoration: InputDecoration(
-                      label: Text('Enter Address'),
-                      // labelText: "Please Enter Your Full Address",
-                      fillColor: const Color(0xfff6f6f6),
-                      filled: true,
-                      labelStyle: TextStyle(color: Colors.grey[500]),
-                      alignLabelWithHint: true,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.transparent
-                              //Color(0xff29b973),
-                              )),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xff29b973),
-                          )),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  Text(
+                    'Enter Your Pick-Up Details',
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   SizedBox(height: 8),
-                  TextField(
+                  CustomTextField(
+                    context: context,
+                    label: 'Enter Address',
+                    controller: viewModel.addressController,
+                    hintText: 'Enter your address',
+                  ),
+                  SizedBox(height: 8),
+                  CustomTextField(
+                    context: context,
+                    label: 'Pin Code',
                     controller: viewModel.pinCodeController,
+                    hintText: 'Enter your pin code',
                     keyboardType: TextInputType.number,
                     maxLength: 6,
-                    decoration: InputDecoration(
-                      label: Text('Pin Code'),
-                      // labelText: "Please Enter Your PIN Code",
-                      fillColor: const Color(0xfff6f6f6),
-                      filled: true,
-                      labelStyle: TextStyle(color: Colors.grey[500]),
-                      // alignLabelWithHint: true,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(color: Colors.transparent
-                              //Color(0xff29b973),
-                              )),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: const BorderSide(
-                            color: Color(0xff29b973),
-                          )),
-                      errorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.red),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
                   ),
                   SizedBox(height: 8),
                   ElevatedButton(
@@ -406,6 +372,7 @@ class _ScheduleViewState extends State<ScheduleView> {
                         viewModel.pinCodeController.text,
                       );
                       addressViewModel.addAddress(newAddress);
+                      addressViewModel.loadAddresses();
                     },
                     child: Text('Save Your Address'),
                   ),
@@ -425,60 +392,6 @@ class _ScheduleViewState extends State<ScheduleView> {
                       ],
                     ),
                   SizedBox(height: 8),
-                  /*
-                  InkWell(
-                    child: Material(
-                      color: Colors.transparent,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFFFFFFF),
-                          boxShadow: const [
-                            BoxShadow(
-                              blurRadius: 3,
-                              color: Color(0x33000000),
-                              offset: Offset(0, 1),
-                            )
-                          ],
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Color(0xFFFFFFFF),
-                            width: 0,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: Icon(
-                                  Icons.edit_location,
-                                  // color: FlutterFlowTheme.of(context).secondaryText,
-                                  size: 24,
-                                ),
-                              ),
-                              Expanded(
-                                flex: 7,
-                                child: Text(
-                                  'Saved Address',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-            */
                   ListView.builder(
                     shrinkWrap: true,
                     itemCount: addressViewModel.addresses.length,
@@ -507,10 +420,8 @@ class _ScheduleViewState extends State<ScheduleView> {
                         onPressed: () {
                           // Do something with the entered address
                           // For now, just print it
-                          print(
-                              'Address: ${viewModel.addressController.text}\nPin Code: ${viewModel.pinCodeController.text}');
+                          log('Address: ${viewModel.addressController.text}\nPin Code: ${viewModel.pinCodeController.text}');
                           viewModel.notifyListeners();
-
                           Navigator.of(context).pop();
                         },
                         child: Text('Done'),
@@ -521,23 +432,6 @@ class _ScheduleViewState extends State<ScheduleView> {
               ),
             ),
           ),
-          // actions: <Widget>[
-          //   TextButton(
-          //     onPressed: () {
-          //       Navigator.of(context).pop();
-          //     },
-          //     child: Text('Cancel'),
-          //   ),
-          //   ElevatedButton(
-          //     onPressed: () {
-          //       // Do something with the entered address
-          //       // For now, just print it
-          //       print('Address: ${viewModel.addressController.text}');
-          //       Navigator.of(context).pop();
-          //     },
-          //     child: Text('Done'),
-          //   ),
-          // ],
         );
       },
     );

@@ -16,8 +16,11 @@ class ProfileViewModel extends ChangeNotifier {
       isLoggedIn = user != null;
       if (user != null) {
         userId = user.uid;
+        notifyListeners(); // Notify listeners when the user logs in
+      } else {
+        userId = null;
+        notifyListeners(); // Notify listeners when the user logs out
       }
-      notifyListeners();
     });
 
     fetchContactSupportNumber();
@@ -84,5 +87,7 @@ class ProfileViewModel extends ChangeNotifier {
 
   void logOut() async {
     await FirebaseAuth.instance.signOut();
+    isLoggedIn = false;
+    notifyListeners();
   }
 }

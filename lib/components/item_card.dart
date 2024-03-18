@@ -8,18 +8,19 @@ class RateInfoCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const RateInfoCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.imageURL,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.center,
+      // crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
           width: MediaQuery.of(context).size.width * 0.48,
@@ -33,19 +34,19 @@ class RateInfoCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
+                spreadRadius: 1,
                 blurRadius: 7,
-                offset: Offset(0, 3),
+                offset: const Offset(0, 3),
               ),
             ],
           ),
         ),
         Padding(
-          padding: EdgeInsetsDirectional.fromSTEB(6, 12, 0, 0),
+          padding: const EdgeInsetsDirectional.fromSTEB(6, 12, 0, 0),
           child: Text(
             title,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.primaryContainer,
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -56,8 +57,8 @@ class RateInfoCard extends StatelessWidget {
           child: Text(
             subtitle,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSecondaryContainer,
-              fontSize: 10,
+              // color: Theme.of(context).colorScheme.onSecondaryContainer,
+              fontSize: 15,
             ),
           ),
         ),

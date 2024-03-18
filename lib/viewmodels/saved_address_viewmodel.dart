@@ -31,4 +31,9 @@ class AddressViewModel extends ChangeNotifier {
     await _repository.deleteAddress(address);
     await loadAddresses();
   }
+
+  Future<void> clearAllAddresses() async {
+    await _repository.clearAllSharedPreferences();
+    await loadAddresses();
+  }
 }

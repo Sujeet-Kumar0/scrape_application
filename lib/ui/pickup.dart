@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scrape_application/components/orders_card.dart';
 import 'package:scrape_application/utils/pickup_status.dart';
 
 import '../model/address_model.dart';
@@ -112,7 +113,7 @@ class _PickUpScreenState extends State<PickUpScreen>
                 address!,
               );
 
-              return _buildOrderCard(order, index);
+              return OrderCard(order: order, index: index);
             },
           );
         }
@@ -201,7 +202,7 @@ class _PickUpScreenState extends State<PickUpScreen>
                 selectedDateAndTime,
                 address!,
               );
-              return _buildOrderCard(order, index);
+              return OrderCard(order: order, index: index);
             },
           );
         }
@@ -209,28 +210,28 @@ class _PickUpScreenState extends State<PickUpScreen>
     );
   }
 
-  Widget _buildOrderCard(OrderDetails order, index) {
-    return Column(
-      children: [
-        ListTile(
-          title: Text('Order #${index + 1}'),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Weight: ${order.selectedWeight}'),
-              Text(
-                  'Date: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
-              Text(
-                  'Time: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
-              Text('Address: ${order.address.address}'),
-              Text('Pin Code: ${order.address.pinCode}'),
-              Divider(
-                thickness: 1,
-              )
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildOrderCard(OrderDetails order, index) {
+  //   return Column(
+  //     children: [
+  //       ListTile(
+  //         title: Text('Order #${index + 1}'),
+  //         subtitle: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           children: [
+  //             Text('Weight\t: ${order.selectedWeight}'),
+  //             Text(
+  //                 'Date\t: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
+  //             Text(
+  //                 'Time\t: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
+  //             Text('Address: ${order.address.address}'),
+  //             Text('Pin Code: ${order.address.pinCode}'),
+  //             Divider(
+  //               thickness: 1,
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }

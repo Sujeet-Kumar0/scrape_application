@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -5,7 +6,7 @@ import 'package:scrape_application/components/headers.dart';
 import 'package:scrape_application/components/side_bar.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -22,6 +23,7 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     super.initState();
+    trackScrapSold();
     _controller = AnimationController(vsync: this);
     scrapController.text = scrap.toString();
   }
@@ -33,24 +35,56 @@ class _DashboardState extends State<Dashboard>
     super.dispose();
   }
 
+// Function to track scrap sold
+  void trackScrapSold() {
+    FirebaseFirestore.instance
+        .collection('scrap')
+        .doc('sold')
+        .snapshots()
+        .listen((snapshot) {
+      final soldAmount = snapshot.data()!['soldAmount'];
+      print('Scrap sold: $soldAmount');
+      setState(() {
+        scrap = soldAmount;
+      });
+      // You can perform any actions you want with the scrap sold data here
+    });
+  }
+
   void updateScrap() {
     setState(() {
       scrap = int.tryParse(scrapController.text) ?? 0;
+      updateScrapSold(scrap);
       isEditing = false;
       editIcon = Icons.edit;
+      trackScrapSold();
     });
+  }
+
+// Function to track scrap sold
+  Future<void> updateScrapSold(int scrap) async {
+    try {
+      await FirebaseFirestore.instance.collection('scrap').doc('sold').update({
+        'soldAmount': scrap,
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
+      print('Scrap sold updated successfully!');
+    } catch (e) {
+      print('Error updating scrap sold: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideMenu(),
+      // appBar: const Header(),
+      drawer: const SideMenu(),
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (kIsWeb)
-              Expanded(
+              const Expanded(
                 // default flex = 1
                 // and it takes 1/6 part of the screen
                 child: SideMenu(),
@@ -60,12 +94,11 @@ class _DashboardState extends State<Dashboard>
               flex: 5,
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       //Heading
-                      Header(),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       // Scrap Sold update
                       Stack(
                         children: [
@@ -96,7 +129,7 @@ class _DashboardState extends State<Dashboard>
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                      text: '${scrap} Has been sold',
+                                      text: '$scrap Has been sold',
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyLarge!
@@ -121,7 +154,7 @@ class _DashboardState extends State<Dashboard>
                                 });
                               },
                               child: Container(
-                                padding: EdgeInsets.all(8),
+                                padding: const EdgeInsets.all(8),
                                 child: Icon(
                                   editIcon,
                                   color: Colors.white,
@@ -135,7 +168,8 @@ class _DashboardState extends State<Dashboard>
                               right: 0,
                               left: 0,
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 color: Colors.black.withOpacity(0.5),
                                 child: Row(
                                   mainAxisAlignment:
@@ -145,19 +179,20 @@ class _DashboardState extends State<Dashboard>
                                       child: TextField(
                                         controller: scrapController,
                                         keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           hintText: 'Enter new value',
                                           hintStyle: TextStyle(
                                             color: Colors.white,
                                           ),
                                         ),
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     IconButton(
                                       onPressed: updateScrap,
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.done,
                                         color: Colors.white,
                                       ),
@@ -168,29 +203,29 @@ class _DashboardState extends State<Dashboard>
                             ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      Text("New Orders"),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "some Orders Numbers",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text("New Users"),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "some Numbers Users",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      SizedBox(
+                      // const Text("New Orders"),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
+                      // Text(
+                      //   "some Orders Numbers",
+                      //   style: Theme.of(context).textTheme.titleLarge,
+                      // ),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
+                      // const Text("New Users"),
+                      // const SizedBox(
+                      //   height: 20,
+                      // ),
+                      // Text(
+                      //   "some Numbers Users",
+                      //   style: Theme.of(context).textTheme.titleLarge,
+                      // ),
+                      const SizedBox(
                         height: 20,
                       ),
                     ],

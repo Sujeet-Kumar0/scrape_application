@@ -59,8 +59,8 @@ class RatesScreenViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateItemInDB(ItemData updatedItem) {
-    firestore.collection('rates').doc("updatedItem.id").update({
+  void updateItemInDB(ItemData updatedItem, String itemId) {
+    firestore.collection('rates').doc(itemId).update({
       'itemName': updatedItem.itemName,
       'price': updatedItem.price,
       'imageURL': updatedItem.imageURL,

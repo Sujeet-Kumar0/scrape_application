@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/user_profile.dart';
+import 'custom_text_field.dart';
 
 class EditProfileDialog extends StatefulWidget {
   final UserProfile userProfile;
@@ -27,61 +27,77 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Edit Profile'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(labelText: 'Name'),
-          ),
-          TextFormField(
-            controller: _phoneNumberController,
-            decoration: InputDecoration(labelText: 'Phone Number'),
-          ),
-        ],
+    return Dialog(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+                child: Text('Edit Profile',
+                    style: Theme.of(context).textTheme.titleLarge)),
+            SizedBox(height: 20.0),
+            CustomTextField(
+              context: context,
+              label: 'Name',
+              controller: _nameController,
+            ),
+            SizedBox(height: 10.0),
+            CustomTextField(
+              context: context,
+              label: 'Phone Number',
+              controller: _phoneNumberController,
+              keyboardType: TextInputType.phone,
+            ),
+            SizedBox(height: 20.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                SizedBox(width: 10.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Save changes here
+                    String newName = _nameController.text;
+                    String newPhoneNumber = _phoneNumberController.text;
+                    // Update user profile with new details
+                    UserProfile updatedProfile = UserProfile(
+                      profileName: newName,
+                      phoneNumber: newPhoneNumber,
+                      userEmail: widget.userProfile.userEmail,
+                      userId: widget.userProfile.userId,
+                    );
+                    CollectionReference usersCollection =
+                        FirebaseFirestore.instance.collection('users');
+                    try {
+                      // Update the user details in Firestore
+                      await usersCollection.doc(updatedProfile.userId).update({
+                        'phoneNumber': newPhoneNumber,
+                        'userName': newName,
+                        'email': widget.userProfile.userEmail,
+                      });
+                      // Print a success message
+                      print(
+                          'Updated User details added to Firestore successfully!');
+                    } catch (e) {
+                      // Print an error message if something goes wrong
+                      print('Error updating user details in Firestore: $e');
+                    }
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Save'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () async {
-            // Save changes here
-            String newName = _nameController.text;
-            String newPhoneNumber = _phoneNumberController.text;
-            // Update user profile with new details
-            UserProfile updatedProfile = UserProfile(
-              profileName: newName,
-              phoneNumber: newPhoneNumber,
-              userEmail: widget.userProfile.userEmail,
-              userId: widget.userProfile.userId,
-            );
-            CollectionReference usersCollection =
-                FirebaseFirestore.instance.collection('users');
-            try {
-              // Add the order details to Firestore
-              await usersCollection.doc(updatedProfile.userId).update({
-                'phoneNumber': newPhoneNumber,
-                'userName': newName,
-                'email': widget.userProfile.userEmail,
-              });
-              // Print a success message
-              print('Updated User details added to Firestore successfully!');
-            } catch (e) {
-              // Print an error message if something goes wrong
-              print('Error adding order details to Firestore: $e');
-            }
-            Navigator.of(context).pop();
-          },
-          child: Text('Save'),
-        ),
-      ],
     );
   }
 

@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -10,16 +9,15 @@ Future<User?> signInWithEmailandPassword(email, password) async {
     return credential.user;
   } on FirebaseAuthException catch (e) {
     if (e.code == 'user-not-found') {
-      if (kDebugMode) {
-        print('No user found for that email.');
-      }
+      throw ('No user found for that email.');
     } else if (e.code == 'wrong-password') {
-      if (kDebugMode) {
-        print('Wrong password provided for that user.');
-      }
+      throw ('Wrong password provided for that user.');
+    } else if (e.code == "invalid-credential") {
+      throw e.message.toString();
     }
   } catch (e) {
     print(e.toString());
+    throw ('An error occurred while signing in.');
   }
   return null;
 }
@@ -45,6 +43,14 @@ Future<User?> signUpWithEmailandPassword(
   return null;
 }
 
-void logout() async {
+Future<void> resetPassword(String email) async {
+  try {
+    await auth.sendPasswordResetEmail(email: email);
+  } catch (e) {
+
+  }
+}
+
+Future<void> logout() async {
   await auth.signOut();
 }

@@ -1,11 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/components/saved_address.dart';
-import 'package:scrape_application/domain/address_repository.dart';
-import 'package:scrape_application/model/address_model.dart';
 import 'package:scrape_application/model/user_profile.dart';
 import 'package:scrape_application/viewmodels/profile_view_model.dart';
 import 'package:scrape_application/viewmodels/saved_address_viewmodel.dart';
@@ -22,11 +19,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  var profileName = "Guest";
 
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProfileViewModel>(context);
     String phoneNumber = viewModel.contactSupportNumber;
+    final addressViewModel = Provider.of<AddressViewModel>(context);
 
     return GestureDetector(
       child: Scaffold(
@@ -43,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return Text('Error: ${snapshot.error}');
               } else {
                 final userProfile = snapshot.data!;
-                final profileName = userProfile.profileName ??
+                profileName = // userProfile.profileName ??
                     viewModel.getCurrentUserDisplayName();
                 return Column(
                   mainAxisSize: MainAxisSize.max,
@@ -280,8 +279,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onPressed: () {
                               print('Logging Out ...');
                               viewModel.logOut();
-                              // viewModel.getCurrentUserDisplayName();
-                              // viewModel.getUserProfile();
+                              addressViewModel.clearAllAddresses();
+                              setState(() {
+                                profileName = "Guest";
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFFFFFFF),

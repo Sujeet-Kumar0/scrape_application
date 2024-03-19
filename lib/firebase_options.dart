@@ -49,8 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '697152728649',
     projectId: 'scrape-freelance',
     authDomain: 'scrape-freelance.firebaseapp.com',
-    databaseURL:
-        'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'scrape-freelance.appspot.com',
   );
 
@@ -59,8 +58,7 @@ class DefaultFirebaseOptions {
     appId: '1:697152728649:android:c9d7092e3c27b489ea9998',
     messagingSenderId: '697152728649',
     projectId: 'scrape-freelance',
-    databaseURL:
-        'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'scrape-freelance.appspot.com',
   );
 
@@ -69,8 +67,7 @@ class DefaultFirebaseOptions {
     appId: '1:697152728649:ios:5d371b63896de510ea9998',
     messagingSenderId: '697152728649',
     projectId: 'scrape-freelance',
-    databaseURL:
-        'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'scrape-freelance.appspot.com',
     iosBundleId: 'com.example.scrapeApplication',
   );
@@ -80,8 +77,7 @@ class DefaultFirebaseOptions {
     appId: '1:697152728649:ios:91b0d3962b237b0cea9998',
     messagingSenderId: '697152728649',
     projectId: 'scrape-freelance',
-    databaseURL:
-        'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL: 'https://scrape-freelance-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'scrape-freelance.appspot.com',
     iosBundleId: 'com.example.scrapeApplication.RunnerTests',
   );

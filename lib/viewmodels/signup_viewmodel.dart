@@ -10,6 +10,7 @@ class SignupViewModel extends ChangeNotifier {
   FocusNode? fullNameFocusNode;
   TextEditingController? fullNameController;
   String? Function(String?)? fullNameControllerValidator;
+
   String? _fullNameControllerValidator(String? val) {
     if (val == null || val.isEmpty) {
       return 'Full name is required.';
@@ -21,6 +22,7 @@ class SignupViewModel extends ChangeNotifier {
   FocusNode? phoneNumberFocusNode;
   TextEditingController? phoneNumberController;
   String? Function(String?)? phoneNumberControllerValidator;
+
   String? _phoneNumberControllerValidator(String? val) {
     if (val == null || val.isEmpty) {
       return 'Number is required.';
@@ -33,6 +35,7 @@ class SignupViewModel extends ChangeNotifier {
   FocusNode? emailAddressFocusNode;
   TextEditingController? emailAddressController;
   String? Function(String?)? emailAddressControllerValidator;
+
   String? _emailAddressControllerValidator(String? val) {
     if (val == null || val.isEmpty) {
       return 'Email is required.';
@@ -48,6 +51,7 @@ class SignupViewModel extends ChangeNotifier {
   FocusNode? confirmPasswordFocusNode;
   TextEditingController? confirmPasswordController;
   String? Function(String?)? confirmPasswordControllerValidator;
+
   String? _confirmPasswordControllerValidator(String? val) {
     if (val == null || val.isEmpty) {
       return 'Password is required.';
@@ -65,6 +69,7 @@ class SignupViewModel extends ChangeNotifier {
   TextEditingController? passwordController;
   late bool passwordVisibility;
   String? Function(String?)? passwordControllerValidator;
+
   String? _passwordControllerValidator(String? val) {
     if (val == null || val.isEmpty) {
       return 'Password is required.';
@@ -121,7 +126,8 @@ class SignupViewModel extends ChangeNotifier {
       log('Setting Up completed successfully!');
     } catch (e) {
       // Print an error message if something goes wrong
-      log('Error adding order details to Firestore: $e',stackTrace: StackTrace.current);
+      log('Error adding order details to Firestore: $e',
+          stackTrace: StackTrace.current);
     }
   }
 

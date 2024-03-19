@@ -64,5 +64,6 @@ class PickupViewModel extends ChangeNotifier {
   }
 
   void getUpcomingOrders() {}
+
   void getCompletedOrders() {}
 }

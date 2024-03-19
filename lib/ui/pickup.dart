@@ -210,28 +210,28 @@ class _PickUpScreenState extends State<PickUpScreen>
     );
   }
 
-  // Widget _buildOrderCard(OrderDetails order, index) {
-  //   return Column(
-  //     children: [
-  //       ListTile(
-  //         title: Text('Order #${index + 1}'),
-  //         subtitle: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             Text('Weight\t: ${order.selectedWeight}'),
-  //             Text(
-  //                 'Date\t: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
-  //             Text(
-  //                 'Time\t: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
-  //             Text('Address: ${order.address.address}'),
-  //             Text('Pin Code: ${order.address.pinCode}'),
-  //             Divider(
-  //               thickness: 1,
-  //             )
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+// Widget _buildOrderCard(OrderDetails order, index) {
+//   return Column(
+//     children: [
+//       ListTile(
+//         title: Text('Order #${index + 1}'),
+//         subtitle: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text('Weight\t: ${order.selectedWeight}'),
+//             Text(
+//                 'Date\t: ${order.selectedDate.day} - ${order.selectedDate.month} - ${order.selectedDate.year}'),
+//             Text(
+//                 'Time\t: ${order.selectedTime.hour} : ${order.selectedTime.minute}'),
+//             Text('Address: ${order.address.address}'),
+//             Text('Pin Code: ${order.address.pinCode}'),
+//             Divider(
+//               thickness: 1,
+//             )
+//           ],
+//         ),
+//       ),
+//     ],
+//   );
+// }
 }

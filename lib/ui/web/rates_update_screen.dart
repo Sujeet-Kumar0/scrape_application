@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/components/custom_text_field.dart';
 import 'package:scrape_application/components/side_bar.dart';
 
+import '../../components/utils.dart';
 import '../../model/item_data.dart';
 import '../../viewmodels/rates_screen_model.dart';
 
@@ -193,7 +195,7 @@ class _ItemsListStreamState extends State<ItemsListStream> {
         FirebaseFirestore.instance.collection('rates').snapshots();
     return Scrollbar(
       child: SizedBox(
-        height: 600,
+        height: 550,
         child: StreamBuilder<QuerySnapshot>(
           stream: _usersStream,
           builder:
@@ -205,9 +207,7 @@ class _ItemsListStreamState extends State<ItemsListStream> {
             }
 
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return buildProgressIndicator();
             }
 
             return Scrollbar(

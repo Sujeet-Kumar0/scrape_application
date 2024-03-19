@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
@@ -24,6 +25,7 @@ class Header extends StatelessWidget {
   }
 }
 
+
 class ProfileCard extends StatelessWidget {
   const ProfileCard({
     Key? key,
@@ -31,70 +33,48 @@ class ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var profileName = "Admin";
+    final user = FirebaseAuth.instance.currentUser;
+    var profileName = user != null ? user.displayName ?? "User" : "User";
+
     return Container(
-      margin: EdgeInsets.only(left: 16),
-      padding: EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 16 / 2,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        border: Border.all(color: Colors.white10),
-      ),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: RichText(
-              text: TextSpan(
-                  text: profileName,
-                  style: Theme.of(context).textTheme.titleSmall!
-                  // .copyWith(
-                  //       color: Colors.white,
-                  //     ),
+      margin: const EdgeInsets.only(left: 16),
+      child: PopupMenuButton<String>(
+        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+          PopupMenuItem<String>(
+            value: 'profile',
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    profileName,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
+                ),
+              ],
             ),
           ),
-          Icon(Icons.keyboard_arrow_down),
+          PopupMenuDivider(),
+          PopupMenuItem<String>(
+            value: 'logout',
+            child: Row(
+              children: [
+                Icon(Icons.logout),
+                SizedBox(width: 8),
+                Text('Logout'),
+              ],
+            ),
+          ),
         ],
+        onSelected: (String value) async {
+          if (value == 'logout') {
+            await FirebaseAuth.instance.signOut();
+            // Redirect to login page or any other necessary actions
+          }
+        },
+        icon: Icon(Icons.keyboard_arrow_down),
       ),
     );
   }
 }
 
-/*
-class SearchField extends StatelessWidget {
-  const SearchField({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: "Search",
-        fillColor: Theme.of(context).colorScheme.secondary,
-        filled: true,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-        ),
-        suffixIcon: InkWell(
-          onTap: () {},
-          child: Container(
-            padding: EdgeInsets.all(16 * 0.75),
-            margin: EdgeInsets.symmetric(horizontal: 16 / 2),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onPrimary,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-            ),
-            child: Icon(Icons.search),
-          ),
-        ),
-      ),
-    );
-  }
-}
-*/

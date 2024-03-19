@@ -46,9 +46,7 @@ Future<User?> signUpWithEmailandPassword(
 Future<void> resetPassword(String email) async {
   try {
     await auth.sendPasswordResetEmail(email: email);
-  } catch (e) {
-
-  }
+  } catch (e) {}
 }
 
 Future<void> logout() async {

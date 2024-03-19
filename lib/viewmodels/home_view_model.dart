@@ -2,11 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class AdBanner {
-  String imageUrl;
-
-  AdBanner({required this.imageUrl});
-}
+import '../model/adbanner_model.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final unfocusNode = FocusNode();
@@ -22,7 +18,6 @@ class HomeViewModel extends ChangeNotifier {
   bool get canUnfocus => unfocusNode.canRequestFocus;
 
   late List<AdBanner> adBanners; // List to hold ad banners
-  bool isLoading = false;
 
   void onPageChanged1(int index) {
     _pageIndex1 = index;
@@ -45,31 +40,31 @@ class HomeViewModel extends ChangeNotifier {
 
   HomeViewModel() {
     // Initialize adBanners
-    adBanners = [
-      AdBanner(imageUrl: 'https://picsum.photos/seed/676/600'),
-      AdBanner(imageUrl: 'https://picsum.photos/seed/645/600'),
-      AdBanner(imageUrl: 'https://picsum.photos/seed/143/600'),
-    ];
+    adBanners = [];
 
     trackScrapSold();
+    fetchAdBannerUrls();
   }
 
-  // Function to load more ad banners
-  Future<void> loadMoreAdBanners() async {
-    if (!isLoading) {
-      isLoading = true;
-      notifyListeners();
-
-      // Load more ad banners (Example: Load 3 more)
-      adBanners.addAll([
-        AdBanner(imageUrl: 'https://picsum.photos/seed/111/600'),
-        AdBanner(imageUrl: 'https://picsum.photos/seed/222/600'),
-        AdBanner(imageUrl: 'https://picsum.photos/seed/333/600'),
-      ]);
-
-      isLoading = false;
-      notifyListeners();
-    }
+  // Function to fetch ad banner URLs from Firebase Cloud Storage
+  void fetchAdBannerUrls() {
+    FirebaseFirestore.instance
+        .collection('scrap')
+        .doc('banners')
+        .get()
+        .then((docSnapshot) {
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data();
+        if (data != null && data.containsKey('urls')) {
+          // Convert the list of URLs to a list of AdBanner objects
+          List<String> urls = List<String>.from(data['urls']);
+          adBanners = urls.map((url) => AdBanner(imageUrl: url)).toList();
+          notifyListeners();
+        }
+      }
+    }).catchError((error) {
+      print('Error fetching ad banner URLs: $error');
+    });
   }
 
   @override

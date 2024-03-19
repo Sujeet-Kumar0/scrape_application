@@ -7,6 +7,7 @@ import 'package:scrape_application/viewmodels/bottom_navigation_model.dart';
 import 'package:scrape_application/viewmodels/home_view_model.dart';
 
 import '../components/utils.dart';
+
 // import 'package:smooth_page_indicator/smooth_page_indicator.dart'
 //     as smooth_page_indicator;
 
@@ -55,31 +56,40 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
       // Reached the end of scroll
-      _model.loadMoreAdBanners();
+      // Scroll back to the first index
+      _scrollController.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
     }
   }
+
 
   void _startTimer() {
     const duration = Duration(seconds: 3);
     _timer = Timer.periodic(
       duration,
-      (timer) {
-        if (_currentPage < _model.adBanners.length - 1) {
-          _currentPage++;
-        } else {
-          _currentPage = 0;
-        }
-        if (_model.pageController1.hasClients) {
-          // Check if the controller is attached
-          _model.pageController1.animateToPage(
-            _currentPage,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.ease,
-          );
+          (timer) {
+        if (_model.adBanners.isNotEmpty) {
+          if (_currentPage < _model.adBanners.length - 1) {
+            _currentPage++;
+          } else {
+            _currentPage = 0;
+          }
+          if (_model.pageController1.hasClients) {
+            // Check if the controller is attached
+            _model.pageController1.animateToPage(
+              _currentPage,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.ease,
+            );
+          }
         }
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -185,9 +195,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller: _scrollController,
                               itemCount: _model.adBanners.length,
                               itemBuilder: (context, index) {
-                                if (index == _model.adBanners.length - 1) {
-                                  return buildProgressIndicator();
-                                } else {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: ClipRRect(
@@ -201,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                   );
-                                }
+
                               },
                             ),
                           ),

@@ -255,8 +255,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               TextSpan(
                                 text: phoneNumber,
                                 style: TextStyle(
-                                  color: Colors
-                                      .blue, // Make the phone number blue for indicating it's tappable
+                                  color: Colors.blue,
+                                  // Make the phone number blue for indicating it's tappable
                                   decoration: TextDecoration.underline,
                                 ),
                                 recognizer: TapGestureRecognizer()

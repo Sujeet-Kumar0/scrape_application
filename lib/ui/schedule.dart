@@ -29,6 +29,7 @@ class ScheduleView extends StatefulWidget {
 
 class _ScheduleViewState extends State<ScheduleView> {
   late ScheduleViewModel viewModel;
+
   // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   bool isLoggedIn = false;

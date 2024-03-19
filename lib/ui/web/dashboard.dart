@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
 import 'package:scrape_application/components/headers.dart';
 import 'package:scrape_application/components/side_bar.dart';
+
+import '../../components/custom_text_field.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -19,13 +23,18 @@ class _DashboardState extends State<Dashboard>
   bool isEditing = false;
   TextEditingController scrapController = TextEditingController();
   int scrap = 0;
+  final FirebaseService _firebaseService = FirebaseService();
+  final TextEditingController _urlController = TextEditingController();
+  List<String> _adBanners = [];
 
   @override
   void initState() {
     super.initState();
+    checkAuthentication();
     trackScrapSold();
     _controller = AnimationController(vsync: this);
     scrapController.text = scrap.toString();
+    _getAdBanners();
   }
 
   @override
@@ -74,8 +83,43 @@ class _DashboardState extends State<Dashboard>
     }
   }
 
+  // Function to check authentication status
+  void checkAuthentication() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null) {
+        // Navigate to login page if user is not authenticated
+        context.go("/login");
+      }
+    });
+  }
+
+  void _getAdBanners() async {
+    List<String> banners = await _firebaseService.getAdBanners();
+    setState(() {
+      _adBanners = banners;
+    });
+  }
+
+  void _addAdBanner() async {
+    String imageUrl = _urlController.text.trim();
+    if (imageUrl.isNotEmpty) {
+      await _firebaseService.createAdBanner(imageUrl);
+      _urlController.clear();
+      _getAdBanners();
+    }
+  }
+
+  void _deleteAdBanner(String imageUrl) async {
+    await _firebaseService.deleteAdBanner(imageUrl);
+    _getAdBanners();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return buildDashBoard(context);
+  }
+
+  Widget buildDashBoard(BuildContext context) {
     return Scaffold(
       // appBar: const Header(),
       drawer: const SideMenu(),
@@ -98,6 +142,8 @@ class _DashboardState extends State<Dashboard>
                   child: Column(
                     children: [
                       //Heading
+                      // need to pass the User Credentials
+                      Header(),
                       const SizedBox(height: 24),
                       // Scrap Sold update
                       Stack(
@@ -206,6 +252,49 @@ class _DashboardState extends State<Dashboard>
                       const SizedBox(
                         height: 20,
                       ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomTextField(
+                                  context:context,
+                                  label: 'Image URL',
+                                  controller: _urlController,
+                                ),
+                                SizedBox(height: 20,),
+                                ElevatedButton(
+                                  onPressed: _addAdBanner,
+                                  child: Text('Add Ad Banner'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            flex: 2,
+                            child: SizedBox(
+                              height: 250,
+                              child: ListView.builder(
+                                itemCount: _adBanners.length,
+                                itemBuilder: (context, index) {
+                                  String imageUrl = _adBanners[index];
+                                  return ListTile(
+                                    title: Text(imageUrl),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () => _deleteAdBanner(imageUrl),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
                       // const Text("New Orders"),
                       // const SizedBox(
                       //   height: 20,
@@ -237,5 +326,45 @@ class _DashboardState extends State<Dashboard>
         ),
       ),
     );
+  }
+}
+
+class FirebaseService {
+  final  _firestore = FirebaseFirestore.instance.collection('scrap').doc('banners');
+
+  Future<void> createAdBanner(String imageUrl) async {
+    try {
+      await _firestore.update({
+        'urls': FieldValue.arrayUnion([imageUrl]),
+      });
+    } catch (e) {
+      print('Error creating ad banner: $e');
+    }
+  }
+
+  Future<List<String>> getAdBanners() async {
+    try {
+      var docSnapshot =
+          await _firestore.get();
+      if (docSnapshot.exists) {
+        var data = docSnapshot.data() as Map<String, dynamic>;
+        return List<String>.from(data['urls']);
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error getting ad banners: $e');
+      return [];
+    }
+  }
+
+  Future<void> deleteAdBanner(String imageUrl) async {
+    try {
+      await _firestore.update({
+        'urls': FieldValue.arrayRemove([imageUrl]),
+      });
+    } catch (e) {
+      print('Error deleting ad banner: $e');
+    }
   }
 }

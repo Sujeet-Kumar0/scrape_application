@@ -18,7 +18,6 @@ class BottomNavigationViewModel extends ChangeNotifier {
   int get selectedIndex => _selectedIndex;
 
   List<Widget> get pages => _pages;
-  
 
   void updateSelectedIndex(int index) {
     _selectedIndex = index;

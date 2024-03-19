@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginViewModel extends ChangeNotifier {
@@ -13,6 +17,9 @@ class LoginViewModel extends ChangeNotifier {
   FocusNode? passwordFocusNode;
   TextEditingController? passwordController;
   late bool passwordVisibility;
+  bool isAdmin = false;
+
+  // bool get isAdmin => false;
   // late String? Function(BuildContext, String?) passwordControllerValidator;
 
   // Initialization method
@@ -57,5 +64,35 @@ class LoginViewModel extends ChangeNotifier {
       return 'Password is required.';
     }
     return null;
+  }
+
+  Future<void> checkAdmin(User? user) async {
+    if (user != null) {
+      String userId =
+          user.uid; // Assuming 'id' is the field that contains the user ID
+
+      // Get the reference to the admins collection
+      CollectionReference adminsCollection =
+          FirebaseFirestore.instance.collection('admins');
+
+      // Query the admins collection to check if the user ID exists
+      QuerySnapshot querySnapshot =
+          await adminsCollection.where('userId', isEqualTo: userId).get();
+
+      // Check if there's any document returned
+      if (querySnapshot.docs.isNotEmpty) {
+        log("the current User is A Admin");
+        isAdmin = true;
+        notifyListeners();
+      } else {
+        log("the current User is Not A Admin");
+
+        isAdmin = false;
+        notifyListeners();
+      }
+    } else {
+      isAdmin = false;
+      notifyListeners();
+    }
   }
 }

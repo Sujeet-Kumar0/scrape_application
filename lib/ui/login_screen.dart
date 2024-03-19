@@ -181,6 +181,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       return;
                     }
+                    await _model.checkAdmin(user);
+
+                    if (_model.isAdmin) {
+                      context.go('/dashboard');
+                    } else if (kIsWeb) {
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Not an Admin"),
+                            content: Text("You are not authorized to access this page as. You are an admin."),
+                            actions: [
+                              TextButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close the dialog
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      context.go('/');
+                    }
                   } catch (error) {
                     showDialog(
                       context: context,
@@ -200,11 +226,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     );
                     return;
-                  }
-                  if (kIsWeb) {
-                    context.go('/dashboard');
-                  } else {
-                    context.go('/');
                   }
                 }
               },

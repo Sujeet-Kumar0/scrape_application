@@ -1,13 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/ui/login_screen.dart';
 import 'package:scrape_application/ui/sign_up.dart';
-import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/theme.dart';
+import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/web/orders_screen.dart';
 import 'package:scrape_application/viewmodels/login_viewmodel.dart';
 import 'package:scrape_application/viewmodels/pickup_viewmodel.dart';
@@ -19,9 +18,9 @@ import 'firebase_options.dart';
 import 'ui/bottom_navigation.dart';
 import 'ui/home_screen.dart';
 import 'ui/pickup.dart';
+import 'ui/profile.dart' as scrape_ui;
 import 'ui/rates_screen.dart';
 import 'ui/schedule.dart';
-import 'ui/profile.dart' as scrape_ui;
 import 'ui/web/rates_update_screen.dart';
 import 'viewmodels/profile_view_model.dart';
 import 'viewmodels/rates_screen_model.dart';
@@ -31,9 +30,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseUIAuth.configureProviders([
-    EmailAuthProvider(),
-  ]);
+
   runApp(const MyApp());
 }
 
@@ -90,36 +87,6 @@ class MyApp extends StatelessWidget {
         path: "/sign-up",
         builder: (context, state) => SignUpScreen(),
       ),
-
-      // GoRoute(
-      //   path: '/sign-in',
-      //   builder: (context, state) => SignInScreen(
-      //     providers: [EmailAuthProvider()],
-      //     actions: [
-      //       AuthStateChangeAction<SignedIn>(
-      //         (context, _) {
-      //           Navigator.push(
-      //             context,
-      //             MaterialPageRoute<ProfileScreen>(
-      //               builder: (context) => ProfileScreen(
-      //                 appBar: AppBar(
-      //                   title: const Text('User Profile'),
-      //                 ),
-      //                 actions: [
-      //                   SignedOutAction(
-      //                     (context) {
-      //                       Navigator.of(context).pop();
-      //                     },
-      //                   )
-      //                 ],
-      //               ),
-      //             ),
-      //           );
-      //         },
-      //       ),
-      //     ],
-      //   ),
-      // )
     ],
   );
 

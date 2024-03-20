@@ -2,10 +2,58 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:scrape_application/components/side_bar.dart';
+import 'package:scrape_application/components/utils.dart';
 import 'package:scrape_application/utils/pickup_status.dart';
 
+import '../../model/order_detail_model.dart';
+
+class TabItem extends StatelessWidget {
+  final String title;
+  final int count;
+
+  const TabItem({
+    super.key,
+    required this.title,
+    required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tab(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+          ),
+          count > 0
+              ? Container(
+                  margin: const EdgeInsetsDirectional.only(start: 5),
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      count > 9 ? "9+" : count.toString(),
+                      style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ),
+                )
+              : const SizedBox(width: 0, height: 0),
+        ],
+      ),
+    );
+  }
+}
+
 class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+  const OrdersScreen({Key? key}) : super(key: key);
 
   @override
   State<OrdersScreen> createState() => _OrdersScreenState();
@@ -18,7 +66,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       appBar: AppBar(
         title: Text('User Orders'),
       ),
-      // drawer: SideMenu(),
       body: SafeArea(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,8 +78,57 @@ class _OrdersScreenState extends State<OrdersScreen> {
             Expanded(
               flex: 5,
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: OrderList(),
+                padding: const EdgeInsets.all(8.0),
+                child: DefaultTabController(
+                  length: 3,
+                  child: Scaffold(
+                    appBar: AppBar(
+                      centerTitle: true,
+                      bottom: PreferredSize(
+                        preferredSize: const Size.fromHeight(40),
+                        child: ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          child: Container(
+                            height: 40,
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                              color: Colors.green.shade100,
+                            ),
+                            child: const TabBar(
+                              indicatorSize: TabBarIndicatorSize.tab,
+                              dividerColor: Colors.transparent,
+                              indicator: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
+                              ),
+                              labelColor: Colors.white,
+                              unselectedLabelColor: Colors.black54,
+                              tabs: [
+                                TabItem(title: 'All Orders', count: 0),
+                                TabItem(title: 'Pending', count: 0),
+                                TabItem(title: 'Completed', count: 0),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    body: TabBarView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: OrderList(),
+                        ),
+                        Center(child: Text('Pending Page')),
+                        Center(child: Text('Completed Page')),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -46,132 +142,132 @@ class OrderList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('Orders').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('Orders')
+          // .orderBy('selectedDateAndTime', descending: true)
+          .snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return buildProgressIndicator();
         }
 
         List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
+
         if (documents.isEmpty) {
           return Center(
-            child: Text("No Customers"),
+            child: Text("No Orders"),
           );
         }
-
-        return ListView.builder(
-          itemCount: documents.length,
-          itemBuilder: (context, index) {
-            return OrderItemWidget(orderSnapshot: documents[index]);
-          },
-        );
-      },
-    );
-  }
-}
-
-class OrderItemWidget extends StatelessWidget {
-  final QueryDocumentSnapshot orderSnapshot;
-
-  const OrderItemWidget({
-    required this.orderSnapshot,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<QuerySnapshot>(
-      future: orderSnapshot.reference.collection('order').get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<QuerySnapshot> nestedSnapshot) {
-        if (nestedSnapshot.hasError) {
-          return Text('Error fetching nested data');
-        }
-
-        if (nestedSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        //for Displaying User Has't Ordered any
-        List<QueryDocumentSnapshot> nestedDocs = nestedSnapshot.data!.docs;
-        // if (nestedDocs.isEmpty) {
-        //   return SizedBox();
-        // }
-
-        // Mapping each nested document to an OrderItem widget
-        List<OrderItem> orderItems = nestedDocs.map((nestedDoc) {
-          var nestedDocData = nestedDoc.data() as Map<String, dynamic>;
-          return OrderItem(
-            userId: orderSnapshot.id,
-            selectedWeight: nestedDocData['selectedWeight'],
-            selectedDateAndTime: nestedDocData['selectedDateAndTime'].toDate(),
-            address: nestedDocData['address']['address'],
-            pinCode: nestedDocData['address']['pinCode'],
-            onDelete: () {
-              deleteOrder(nestedDoc.id);
-            },
-            onUpdate: () {
-              _showStatusUpdateDialog(
-                context,
-                nestedDoc.id,
-                (nestedDocData["status"] as String).toLowerCase() == 'completed'
-                    ? Status.completed
-                    : Status.upcoming,
-              );
-            },
-          );
-        }).toList();
-
-        // return Column(
-        //   children: orderItems,
-        // );
 
         return SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: [
-              DataColumn(label: Text('User ID')),
-              DataColumn(label: Text('Chossen Weight cata')),
-              DataColumn(label: Text('Date and Time')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('Phone Number')),
+              DataColumn(label: Text('Selected Weight')),
+              DataColumn(label: Text('Selected Date and Time')),
               DataColumn(label: Text('Address')),
               DataColumn(label: Text('Pin Code')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: nestedDocs.map((doc) {
-              return DataRow(cells: [
-                DataCell(Text(orderSnapshot.id)),
-                DataCell(Text(doc['selectedWeight'])),
-                DataCell(Text(doc['selectedDateAndTime'].toDate().toString())),
-                DataCell(Text(doc['address']['address'])),
-                DataCell(Text(doc['address']['pinCode'])),
-                DataCell(Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        _showStatusUpdateDialog(
-                          context,
-                          doc.id,
-                          (doc["status"] as String).toLowerCase() == 'completed'
-                              ? Status.completed
-                              : Status.upcoming,
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        deleteOrder(doc.id);
-                      },
-                    ),
-                  ],
-                )),
-              ]);
+            rows: documents.map<DataRow>((doc) {
+              final data = doc.data() as Map?;
+
+              if (data == null || data.isEmpty) {
+                return DataRow(cells: [
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                  DataCell(SizedBox()),
+                ]);
+              }
+
+              final order =
+                  OrderDetails.fromFirestore(data as Map<String, dynamic>);
+
+              return DataRow(
+                cells: [
+                  DataCell(FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(order.userId)
+                        .get(),
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return buildProgressIndicator();
+                      }
+
+                      if (userSnapshot.hasError || !userSnapshot.hasData) {
+                        return Text('User details not found');
+                      }
+
+                      final userData = userSnapshot.data!.data() as Map?;
+                      if (userData == null || userData.isEmpty) {
+                        return Text('User details not found');
+                      }
+
+                      final userName = userData['userName'];
+
+                      return Text(userName ?? 'N/A');
+                    },
+                  )),
+                  DataCell(FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(order.userId)
+                        .get(),
+                    builder: (context, userSnapshot) {
+                      if (userSnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return buildProgressIndicator();
+                      }
+
+                      if (userSnapshot.hasError || !userSnapshot.hasData) {
+                        return Text('User details not found');
+                      }
+
+                      final userData = userSnapshot.data!.data() as Map?;
+                      if (userData == null || userData.isEmpty) {
+                        return Text('User details not found');
+                      }
+
+                      final userPhoneNumber = userData['phoneNumber'];
+
+                      return Text(userPhoneNumber ?? 'N/A');
+                    },
+                  )),
+                  DataCell(Text(order.selectedWeight)),
+                  DataCell(Text('${order.selectedDate}')),
+                  DataCell(Text(order.address.address)),
+                  DataCell(Text(order.address.pinCode)),
+                  DataCell(Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          _showStatusUpdateDialog(
+                              context, doc.id, order.status!);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          deleteOrder(doc.id);
+                        },
+                      ),
+                    ],
+                  )),
+                ],
+              );
             }).toList(),
           ),
         );
@@ -183,11 +279,8 @@ class OrderItemWidget extends StatelessWidget {
     try {
       await FirebaseFirestore.instance
           .collection('Orders')
-          .doc(orderSnapshot.id)
-          .collection("order")
           .doc(orderId)
           .delete();
-
       print('Order deleted successfully!');
     } catch (e) {
       print('Error deleting order: $e');
@@ -252,8 +345,6 @@ class OrderItemWidget extends StatelessWidget {
     try {
       await FirebaseFirestore.instance
           .collection('Orders')
-          .doc(orderSnapshot.id)
-          .collection("order")
           .doc(orderId)
           .update({"status": status.toString().split('.').last});
 
@@ -265,34 +356,28 @@ class OrderItemWidget extends StatelessWidget {
 }
 
 class OrderItem extends StatelessWidget {
-  final String? userId;
-  final String? selectedWeight;
-  final DateTime? selectedDateAndTime;
-  final String? address;
-  final String? pinCode;
+  final OrderDetails order;
   final VoidCallback? onDelete;
   final VoidCallback? onUpdate;
 
-  OrderItem(
-      {this.userId,
-      this.selectedWeight,
-      this.selectedDateAndTime,
-      this.address,
-      this.pinCode,
-      this.onDelete,
-      this.onUpdate});
+  const OrderItem({
+    required this.order,
+    this.onDelete,
+    this.onUpdate,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text('User ID: $userId'),
-      subtitle: Row(
+      title: Text('User ID: ${order.userId}'),
+      subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Selected Weight: $selectedWeight'),
-          Text('Selected Date and Time: ${selectedDateAndTime.toString()}'),
-          Text('Address: $address'),
-          Text('Pin Code: $pinCode'),
+          Text('Selected Weight: ${order.selectedWeight}'),
+          Text(
+              'Selected Date and Time: ${order.selectedDate} ${order.selectedTime}'),
+          Text('Address: ${order.address.address}'),
+          Text('Pin Code: ${order.address.pinCode}'),
         ],
       ),
       trailing: Row(
@@ -311,69 +396,3 @@ class OrderItem extends StatelessWidget {
     );
   }
 }
-
-// class OrderList extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<QuerySnapshot>(
-//       stream: FirebaseFirestore.instance.collection('Orders').snapshots(),
-//       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-//         if (snapshot.hasError) {
-//           return Text('Something went wrong');
-//         }
-
-//         if (snapshot.connectionState == ConnectionState.waiting) {
-//           return Center(
-//             child: CircularProgressIndicator(),
-//           );
-//         }
-
-//         List<QueryDocumentSnapshot> documents = snapshot.data!.docs;
-//         if (documents.isEmpty) {
-//           return Center(
-//             child: Text("No Customers"),
-//           );
-//         }
-
-//         return SingleChildScrollView(
-//           scrollDirection: Axis.horizontal,
-//           child: DataTable(
-//             columns: [
-//               DataColumn(label: Text('User ID')),
-//               DataColumn(label: Text('Selected Weight')),
-//               DataColumn(label: Text('Selected Date and Time')),
-//               DataColumn(label: Text('Address')),
-//               DataColumn(label: Text('Pin Code')),
-//               DataColumn(label: Text('Actions')),
-//             ],
-//             rows: documents.map((doc) {
-//               return DataRow(cells: [
-//                 DataCell(Text(doc.id)),
-//                 DataCell(Text(doc['selectedWeight'])),
-//                 DataCell(Text(doc['selectedDateAndTime'].toString())),
-//                 DataCell(Text(doc['address']['address'])),
-//                 DataCell(Text(doc['address']['pinCode'])),
-//                 DataCell(Row(
-//                   children: [
-//                     IconButton(
-//                       icon: Icon(Icons.edit),
-//                       onPressed: () {
-//                         // Handle edit action
-//                       },
-//                     ),
-//                     IconButton(
-//                       icon: Icon(Icons.delete),
-//                       onPressed: () {
-//                         // Handle delete action
-//                       },
-//                     ),
-//                   ],
-//                 )),
-//               ]);
-//             }).toList(),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }

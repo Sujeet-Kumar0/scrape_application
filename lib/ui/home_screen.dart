@@ -65,12 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   void _startTimer() {
     const duration = Duration(seconds: 3);
     _timer = Timer.periodic(
       duration,
-          (timer) {
+      (timer) {
         if (_model.adBanners.isNotEmpty) {
           if (_currentPage < _model.adBanners.length - 1) {
             _currentPage++;
@@ -89,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,20 +193,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               controller: _scrollController,
                               itemCount: _model.adBanners.length,
                               itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: CachedNetworkImage(
-                                        imageUrl:
-                                            _model.adBanners[index].imageUrl,
-                                        width: 250,
-                                        height: 150,
-                                        fit: BoxFit.cover,
-                                      ),
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: CachedNetworkImage(
+                                      imageUrl:
+                                          _model.adBanners[index].imageUrl,
+                                      width: 300,
+                                      height: 150,
+                                      fit: BoxFit.cover,
                                     ),
-                                  );
-
+                                  ),
+                                );
                               },
                             ),
                           ),

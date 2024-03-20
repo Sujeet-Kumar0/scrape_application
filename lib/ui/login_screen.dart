@@ -186,18 +186,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     if (_model.isAdmin) {
                       context.go('/dashboard');
                     } else if (kIsWeb) {
-
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text("Not an Admin"),
-                            content: Text("You are not authorized to access this page as. You are an admin."),
+                            content: Text(
+                                "You are not authorized to access this page as. You are not an admin."),
                             actions: [
                               TextButton(
                                 child: Text("OK"),
                                 onPressed: () {
-                                  Navigator.of(context).pop(); // Close the dialog
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
                                 },
                               ),
                             ],

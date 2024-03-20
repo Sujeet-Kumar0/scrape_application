@@ -110,7 +110,7 @@ class _PickUpScreenState extends State<PickUpScreen>
                 selectedWeight,
                 selectedDateTime!,
                 selectedDateAndTime,
-                address!,
+                address,
               );
 
               return OrderCard(order: order, index: index);

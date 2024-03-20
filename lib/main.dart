@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final _router = GoRouter(
-    initialLocation: kIsWeb ? "/login" : '/',
+    initialLocation: kIsWeb ? "/dashboard" : '/',
     routes: [
       GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
       GoRoute(

@@ -22,6 +22,7 @@ class AuthRepository {
     } catch (e) {
       throw e;
     }
+    return null;
   }
 
   Future<User?> registerWithEmailAndPassword(
@@ -41,6 +42,7 @@ class AuthRepository {
     } catch (e) {
       throw e;
     }
+    return null;
   }
 
   Future<void> resetPassword(String email) async {

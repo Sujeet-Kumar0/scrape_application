@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -62,36 +64,38 @@ class ScheduleViewModel extends ChangeNotifier {
     print('Submitting form...');
     CollectionReference ordersCollection =
         FirebaseFirestore.instance.collection('Orders');
+
     var orderDetails = OrderDetails(selectedWeight!, selectedDate!,
-        selectedTime!, Address(addressController.text, pinCodeController.text));
+        selectedTime!, Address(addressController.text, pinCodeController.text),
+        status: Status.upcoming, userId: userId!);
 
     // Create a map representing the order details
-    Map<String, dynamic> orderData = {
-      'selectedWeight': selectedWeight!,
-      'selectedDateAndTime': DateTime(selectedDate!.year, selectedDate!.month,
-          selectedDate!.day, selectedTime!.hour, selectedTime!.minute),
-      // 'selectedTime': selectedTime,
-      'address': {
-        'address': addressController.text,
-        'pinCode': pinCodeController.text,
-      },
-      'status': Status.upcoming.name
-    };
+    // Map<String, dynamic> orderData = {
+    //   'selectedWeight': selectedWeight!,
+    //   'selectedDateAndTime': DateTime(selectedDate!.year, selectedDate!.month,
+    //       selectedDate!.day, selectedTime!.hour, selectedTime!.minute),
+    //   // 'selectedTime': selectedTime,
+    //   'address': {
+    //     'address': addressController.text,
+    //     'pinCode': pinCodeController.text,
+    //   },
+    //   'status': Status.upcoming.name
+    // };
     try {
       // Add the order details to Firestore
-      await ordersCollection.doc(userId).collection("order").add(orderData);
+      await ordersCollection.add(orderDetails.toMap());
 
       // Print a success message
-      print('Order details added to Firestore successfully!');
+      log('Order details added to Firestore successfully!');
     } catch (e) {
       // Print an error message if something goes wrong
-      print('Error adding order details to Firestore: $e');
+      log('Error adding order details to Firestore: $e');
     }
-    print('Selected Weight: ${orderDetails.selectedWeight}');
-    print('Selected Date: ${orderDetails.selectedDate}');
-    print('Selected Time: ${orderDetails.selectedTime}');
-    print('Address: ${orderDetails.address.address}');
-    print('Pin Code: ${orderDetails.address.pinCode}');
+    log('Selected Weight: ${orderDetails.selectedWeight}');
+    log('Selected Date: ${orderDetails.selectedDate}');
+    log('Selected Time: ${orderDetails.selectedTime}');
+    log('Address: ${orderDetails.address.address}');
+    log('Pin Code: ${orderDetails.address.pinCode}');
 
     // Reset all values
     selectedWeight = null;

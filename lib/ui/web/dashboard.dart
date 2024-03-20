@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:scrape_application/components/headers.dart';
 import 'package:scrape_application/components/side_bar.dart';
@@ -252,7 +253,13 @@ class _DashboardState extends State<Dashboard>
                       const SizedBox(
                         height: 20,
                       ),
-
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Your Banners Control:",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ),
                       Row(
                         children: [
                           Expanded(
@@ -261,11 +268,13 @@ class _DashboardState extends State<Dashboard>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 CustomTextField(
-                                  context:context,
+                                  context: context,
                                   label: 'Image URL',
                                   controller: _urlController,
                                 ),
-                                SizedBox(height: 20,),
+                                SizedBox(
+                                  height: 20,
+                                ),
                                 ElevatedButton(
                                   onPressed: _addAdBanner,
                                   child: Text('Add Ad Banner'),
@@ -285,7 +294,8 @@ class _DashboardState extends State<Dashboard>
                                     title: Text(imageUrl),
                                     trailing: IconButton(
                                       icon: Icon(Icons.delete),
-                                      onPressed: () => _deleteAdBanner(imageUrl),
+                                      onPressed: () =>
+                                          _deleteAdBanner(imageUrl),
                                     ),
                                   );
                                 },
@@ -330,7 +340,8 @@ class _DashboardState extends State<Dashboard>
 }
 
 class FirebaseService {
-  final  _firestore = FirebaseFirestore.instance.collection('scrap').doc('banners');
+  final _firestore =
+      FirebaseFirestore.instance.collection('scrap').doc('banners');
 
   Future<void> createAdBanner(String imageUrl) async {
     try {
@@ -344,8 +355,7 @@ class FirebaseService {
 
   Future<List<String>> getAdBanners() async {
     try {
-      var docSnapshot =
-          await _firestore.get();
+      var docSnapshot = await _firestore.get();
       if (docSnapshot.exists) {
         var data = docSnapshot.data() as Map<String, dynamic>;
         return List<String>.from(data['urls']);

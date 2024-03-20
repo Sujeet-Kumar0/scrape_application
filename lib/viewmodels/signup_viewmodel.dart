@@ -107,8 +107,8 @@ class SignupViewModel extends ChangeNotifier {
   void updateUserRecord(User user) async {
     CollectionReference usersCollection =
         FirebaseFirestore.instance.collection('users');
-    CollectionReference ordersCollection =
-        FirebaseFirestore.instance.collection('Orders');
+    // CollectionReference ordersCollection =
+    //     FirebaseFirestore.instance.collection('Orders');
 
     final userData = {
       'phoneNumber': phoneNumberController!.text,
@@ -122,7 +122,7 @@ class SignupViewModel extends ChangeNotifier {
       // await user?.updatePhoneNumber(phoneNumberController!.text);
       // Print a success message
       log('User details added to Firestore successfully!');
-      await ordersCollection.doc(user.uid).set(<String, dynamic>{});
+      // await ordersCollection.doc(user.uid).set(<String, dynamic>{});
       log('Setting Up completed successfully!');
     } catch (e) {
       // Print an error message if something goes wrong

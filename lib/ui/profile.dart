@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProfileViewModel>(context);
-    String phoneNumber = viewModel.contactSupportNumber;
+    // String phoneNumber = viewModel.contactSupportNumber;
     final addressViewModel = Provider.of<AddressViewModel>(context);
 
     return GestureDetector(
@@ -253,7 +253,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: Theme.of(context).textTheme.bodyLarge,
                             children: [
                               TextSpan(
-                                text: phoneNumber,
+                                text: viewModel.contactSupportNumber,
                                 style: TextStyle(
                                   color: Colors.blue,
                                   // Make the phone number blue for indicating it's tappable
@@ -261,7 +261,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    _launchPhoneDialer(context, phoneNumber);
+                                    _launchPhoneDialer(context,
+                                        viewModel.contactSupportNumber);
                                   },
                               ),
                             ],

@@ -121,46 +121,6 @@ class _PickUpScreenState extends State<PickUpScreen>
     );
   }
 
-// Widget _buildUpcomingContent(String text) {
-//   return StreamBuilder<QuerySnapshot>(
-//     stream: _viewModel.fetchOrdersStream().map((snapshot) => snapshot.docs.where((doc) => doc['status'] == ).toList()),
-//     builder: (context, snapshot) {
-//       if (snapshot.connectionState == ConnectionState.waiting) {
-//         return Center(child: CircularProgressIndicator());
-//       } else if (snapshot.hasError) {
-//         return Center(child: Text('Error: ${snapshot.error}'));
-//       } else if (snapshot.data == null || snapshot.data!.isEmpty) {
-//         return Center(child: Text('Nothing Here!'));
-//       } else {
-//               final upcomingOrders = snapshot.data!.docs.where((doc) => doc['status'] == Status.upcoming.name).toList();
-
-//         return ListView.builder(
-
-//           itemCount: snapshot.data!.length,
-//           itemBuilder: (context, index) {
-//             final doc = snapshot.data![index];
-//             final selectedWeight = doc['selectedWeight'] ?? "";
-//             final selectedDateTime = (doc['selectedDateAndTime'] as Timestamp?)?.toDate();
-//             final selectedDateAndTime = selectedDateTime != null ? TimeOfDay.fromDateTime(selectedDateTime) : null;
-//             final addressJson = doc['address'];
-//             final address = addressJson != null ? Address.fromJson(addressJson) : null;
-//             if (selectedDateAndTime == null || address == null) {
-//               return SizedBox(); // Skip rendering if necessary data is null
-//             }
-//             final order = OrderDetails(
-//               selectedWeight,
-//               selectedDateTime!,
-//               selectedDateAndTime,
-//               address!,
-//             );
-//             return _buildOrderCard(order);
-//           },
-//         );
-//       }
-//     },
-//   );
-// }
-
   Widget _buildCompletedContent(String text) {
     return StreamBuilder<QuerySnapshot>(
       stream: _viewModel.fetchOrdersStream(),

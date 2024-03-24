@@ -1,15 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/viewmodels/bottom_navigation_model.dart';
 import 'package:scrape_application/viewmodels/home_view_model.dart';
-
-import '../components/utils.dart';
-
-// import 'package:smooth_page_indicator/smooth_page_indicator.dart'
-//     as smooth_page_indicator;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,23 +19,21 @@ class _HomeScreenState extends State<HomeScreen> {
   late HomeViewModel _model;
   late ScrollController _scrollController;
   late Timer _timer;
-  int _currentPage = 0;
+  double _currentPage = 0;
 
   // late BottomNavigationViewModel _bottomNavigationViewModel;
 
   @override
   void initState() {
     _model = HomeViewModel();
+    _scrollController = ScrollController();
 
-    _model.pageController1 = PageController(initialPage: 0);
-    _scrollController = ScrollController()..addListener(_scrollListener);
+    // Start the timer when the widget is first built
+    _startTimer();
 
-    // Ensure that the PageController is attached to a scroll view
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _startTimer();
-      },
-    );
+    // Add listener to stop the timer when the user starts scrolling manually
+    _scrollController.addListener(_stopTimer);
+
     super.initState();
   }
 
@@ -47,22 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _model.dispose();
     _scrollController.dispose();
+    // Cancel the timer when the widget is disposed
     _timer.cancel();
-
     super.dispose();
-  }
-
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // Reached the end of scroll
-      // Scroll back to the first index
-      _scrollController.animateTo(
-        0.0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.ease,
-      );
-    }
   }
 
   void _startTimer() {
@@ -74,12 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
           if (_currentPage < _model.adBanners.length - 1) {
             _currentPage++;
           } else {
-            _currentPage = 0;
+            _currentPage = 0.0;
           }
-          if (_model.pageController1.hasClients) {
+          if (_scrollController.hasClients) {
             // Check if the controller is attached
-            _model.pageController1.animateToPage(
-              _currentPage,
+            _scrollController.animateTo(
+              _currentPage * 300, // Assuming each item width is 300
               duration: const Duration(milliseconds: 500),
               curve: Curves.ease,
             );
@@ -87,6 +68,17 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
     );
+  }
+
+  void _stopTimer() {
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
+  }
+
+  void _restartTimer() {
+    // Restart the timer when the user stops scrolling
+    _startTimer();
   }
 
   @override
@@ -104,14 +96,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Stack(
             children: [
               // Background image positioned behind other widgets
-              Positioned.fill(
-                child: Image.asset(
-                  "assets/images/Blue Gradient.png",
-                  fit: BoxFit.cover,
-                ),
-              ),
+              // Positioned.fill(
+              //   child: Image.asset(
+              //     "assets/images/Blue Gradient.png",
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -125,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 0, 0, 8),
+                                0, 0, 0, 16),
                             child: Container(
                               height: 100,
                               decoration: BoxDecoration(
@@ -133,9 +125,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 image: DecorationImage(
                                     // fit: BoxFit.cover,
                                     image: Image.asset(
-                                  'assets/images/test_logo.png',
+                                  'assets/images/Scrap.png',
                                   width: 0,
-                                  height: 101,
+                                  // height: 101,
                                   fit: BoxFit.contain,
                                 ).image),
                                 borderRadius: BorderRadius.circular(8),
@@ -149,41 +141,67 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 8, 0, 8),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                // const snackBar = SnackBar(
-                                //   content: Text('Button Pressed'),
-                                //   duration: Duration(seconds: 3),
-                                // );
-
-                                // ScaffoldMessenger.of(context)
-                                //     .showSnackBar(snackBar);
-                                // // context.pushReplacement('/schedule');
-                                bottomNavigationViewModel
-                                    .updateSelectedIndex(2);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    24, 0, 24, 0),
-                                elevation: 3,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                          Text(
+                            "Lets save Enviroment & Make",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Some Money",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  bottomNavigationViewModel
+                                      .updateSelectedIndex(2);
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  // padding: const EdgeInsets.symmetric(
+                                  //     horizontal: 24),
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Request Pick-Up',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Colors.white,
+                                      ),
                                 ),
                               ),
-                              child: Text(
-                                'SCHEDULE A PICK-UP',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      color: Colors.white,
-                                    ),
-                              ),
+                            ],
+                          ),
+
+                          Container(
+                            margin: const EdgeInsetsDirectional.fromSTEB(
+                                0, 16, 0, 16),
+                            height: 90,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.background,
+                              image: DecorationImage(
+                                  // fit: BoxFit.cover,
+                                  image: Image.asset(
+                                'assets/images/Sell Your Scrap.png',
+                                width: 0,
+                                // height: 101,
+                                fit: BoxFit.cover,
+                              ).image),
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: const [
+                                BoxShadow(
+                                  blurRadius: 12,
+                                  color: Color(0x33000000),
+                                  offset: Offset(0, 5),
+                                )
+                              ],
                             ),
                           ),
                           // this is the ad Banners
@@ -201,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       imageUrl:
                                           _model.adBanners[index].imageUrl,
                                       width: 300,
-                                      height: 150,
+                                      height: 10,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -210,38 +228,65 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            "Our Impact",
+                            "Our Vision",
                             style: Theme.of(context)
                                 .textTheme
-                                .titleLarge!
-                                .copyWith(color: Colors.primaries.last),
+                                .titleMedium!
+                                .copyWith(
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                  fontSize: 20,
+                                ),
                           ),
 
                           const SizedBox(height: 10),
 
-                          Container(
-                            height: 200,
-                            alignment: const AlignmentDirectional(0, -0.8),
-                            child: RichText(
-                              textScaler: MediaQuery.of(context).textScaler,
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '${_model.scrap} /KG',
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge,
+                          ClipRRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                              child: Container(
+                                height: 120,
+                                alignment: const AlignmentDirectional(0, 0),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(
+                                        'assets/images/design.png'), // Replace 'assets/background_image.jpg' with your image path
+                                    fit: BoxFit.cover,
                                   ),
-                                  TextSpan(
-                                      text: '\n Has been sold',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium)
-                                ],
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                  border: Border.all(
+                                    width: 1.5,
+                                    color: Colors.white.withOpacity(0.2),
+                                  ),
+                                ),
+                                child: RichText(
+                                  textScaler: MediaQuery.of(context).textScaler,
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '${_model.scrap} /KG',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleLarge!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onTertiaryContainer),
+                                      ),
+                                      TextSpan(
+                                        text: '\n Has been sold',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium,
+                                      )
+                                    ],
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 70),
                         ],
                       ),
                     ),

@@ -16,7 +16,7 @@ class OrderCard extends StatelessWidget {
         ListTile(
           title: Text('Order #${index + 1}'),
           subtitle: Table(
-            columnWidths: {
+            columnWidths: const {
               0: FlexColumnWidth(1),
               1: FlexColumnWidth(2),
             },
@@ -31,6 +31,10 @@ class OrderCard extends StatelessWidget {
             ],
           ),
         ),
+        const Divider(
+          thickness: 1,
+          height: 1,
+        )
       ],
     );
   }

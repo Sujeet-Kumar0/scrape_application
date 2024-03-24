@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:scrape_application/ui/login_screen.dart';
@@ -8,6 +9,7 @@ import 'package:scrape_application/ui/sign_up.dart';
 import 'package:scrape_application/ui/theme.dart';
 import 'package:scrape_application/ui/web/dashboard.dart';
 import 'package:scrape_application/ui/web/orders_screen.dart';
+import 'package:scrape_application/ui/web/user.dart';
 import 'package:scrape_application/viewmodels/login_viewmodel.dart';
 import 'package:scrape_application/viewmodels/pickup_viewmodel.dart';
 import 'package:scrape_application/viewmodels/saved_address_viewmodel.dart';
@@ -26,7 +28,9 @@ import 'viewmodels/profile_view_model.dart';
 import 'viewmodels/rates_screen_model.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -41,9 +45,9 @@ class MyApp extends StatelessWidget {
   // static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static final _router = GoRouter(
-    initialLocation: kIsWeb ? "/dashboard" : '/',
+    initialLocation: kIsWeb ? "/user-details" : '/',
     routes: [
-      GoRoute(path: '/', builder: (context, state) => BottomNavigation()),
+      GoRoute(path: '/', builder: (context, state) => BottomNavigation(),),
       GoRoute(
         path: "/home",
         builder: (context, state) => HomeScreen(),
@@ -79,6 +83,11 @@ class MyApp extends StatelessWidget {
           path: "/orders",
           builder: (context, state) => OrdersScreen(),
         ),
+      if (kIsWeb)
+        GoRoute(
+          path: "/user-details",
+          builder: (context, state) => UserDetailsScreen(),
+        ),
       GoRoute(
         path: "/login",
         builder: (context, state) => LoginScreen(),
@@ -91,13 +100,14 @@ class MyApp extends StatelessWidget {
   );
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
+    FlutterNativeSplash.remove();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-        ChangeNotifierProvider<RatesScreenViewModel>(
-            create: (context) => RatesScreenViewModel()),
+        ChangeNotifierProvider(create: (context) => RatesScreenViewModel()),
         ChangeNotifierProvider(create: (context) => ScheduleViewModel()),
         ChangeNotifierProvider(create: (context) => PickupViewModel()),
         ChangeNotifierProvider(create: (context) => LoginViewModel()),

@@ -358,6 +358,15 @@ class _ScheduleViewState extends State<ScheduleView> {
                   ),
                   SizedBox(height: 8),
                   CustomTextField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'This field cannot be empty';
+                      }
+                      if (value.length != 6) {
+                        return 'Pin Code must be exactly 6 characters long';
+                      }
+                      return null;
+                    },
                     context: context,
                     label: 'Pin Code',
                     controller: viewModel.pinCodeController,
@@ -368,14 +377,13 @@ class _ScheduleViewState extends State<ScheduleView> {
                   SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
-                      final newAddress = Address(
-                        viewModel.addressController.text,
-                        viewModel.pinCodeController.text,
-                      );
-                      addressViewModel.addAddress(newAddress);
-                      addressViewModel.loadAddresses();
+                      // Do something with the entered address
+                      // For now, just print it
+                      log('Address: ${viewModel.addressController.text}\nPin Code: ${viewModel.pinCodeController.text}');
+                      viewModel.notifyListeners();
+                      Navigator.of(context).pop();
                     },
-                    child: Text('Save Your Address'),
+                    child: Text('Done'),
                   ),
                   if (addressViewModel.addresses.length != 0)
                     Row(
@@ -419,14 +427,15 @@ class _ScheduleViewState extends State<ScheduleView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          // Do something with the entered address
-                          // For now, just print it
-                          log('Address: ${viewModel.addressController.text}\nPin Code: ${viewModel.pinCodeController.text}');
-                          viewModel.notifyListeners();
-                          Navigator.of(context).pop();
+                          final newAddress = Address(
+                            viewModel.addressController.text,
+                            viewModel.pinCodeController.text,
+                          );
+                          addressViewModel.addAddress(newAddress);
+                          addressViewModel.loadAddresses();
                         },
-                        child: Text('Done'),
-                      ),
+                        child: Text('Save Your Address'),
+                      )
                     ],
                   )
                 ],

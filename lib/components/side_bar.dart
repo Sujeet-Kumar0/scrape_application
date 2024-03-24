@@ -14,7 +14,7 @@ class SideMenu extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
-            child: Image.asset("assets/images/test_logo.png"),
+            child: Image.asset("assets/images/Scrap.png"),
           ),
           DrawerListTile(
             title: "Dashboard",
@@ -35,6 +35,13 @@ class SideMenu extends StatelessWidget {
             icon: Icons.done_all_outlined,
             press: () {
               context.go("/orders");
+            },
+          ),
+          DrawerListTile(
+            title: "Users Details",
+            icon: Icons.person_2,
+            press: () {
+              context.go("/user-details");
             },
           )
         ],

@@ -7,22 +7,11 @@ import '../model/adbanner_model.dart';
 class HomeViewModel extends ChangeNotifier {
   final unfocusNode = FocusNode();
 
-  late PageController pageController1;
-
-  int _pageIndex1 = 0;
-
-  int get pageIndex1 => _pageIndex1;
-
   int scrap = 00000000;
 
   bool get canUnfocus => unfocusNode.canRequestFocus;
 
-  late List<AdBanner> adBanners; // List to hold ad banners
-
-  void onPageChanged1(int index) {
-    _pageIndex1 = index;
-    notifyListeners();
-  }
+  late List<AdBanner> adBanners;
 
   // Function to track scrap sold
   void trackScrapSold() {
@@ -70,7 +59,6 @@ class HomeViewModel extends ChangeNotifier {
   @override
   void dispose() {
     unfocusNode.dispose();
-    pageController1.dispose();
     super.dispose();
   }
 }

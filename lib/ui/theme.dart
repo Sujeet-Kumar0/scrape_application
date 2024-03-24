@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Define the primary and secondary colors
-final Color primaryColor = Color(0xFF00BDD6);
-final Color secondaryColor = Color(0xFF8353E2);
+final Color primaryColor = Color(0xFF55AB33);
+final Color secondaryColor = Color(0xFF81CA33);
+final Color tertiryColor = Color(0x0D0D0D);
 
 // Define the text theme
 final TextTheme _textTheme = TextTheme(
@@ -22,15 +23,15 @@ final TextTheme _textTheme = TextTheme(
     color: Colors.black, // Adjust as per design
   ),
   // Add more styles for other headings if needed
-  bodyLarge: GoogleFonts.inter(
+  bodyLarge: GoogleFonts.epilogue(
     fontSize: 16,
     color: Colors.black87, // Adjust as per design
   ),
-  bodyMedium: GoogleFonts.inter(
+  bodyMedium: GoogleFonts.epilogue(
     fontSize: 14,
     color: Colors.black87, // Adjust as per design
   ),
-  bodySmall: GoogleFonts.inter(
+  bodySmall: GoogleFonts.epilogue(
     color: Colors.black87, // Adjust as per design
   ),
 );
@@ -42,12 +43,9 @@ final ThemeData myTheme = ThemeData(
       seedColor: primaryColor,
       primary: primaryColor,
       secondary: secondaryColor),
-  // primaryColor: primaryColor,
-  // secondaryColor: secondaryColor,
-  scaffoldBackgroundColor: Colors.white, // Adjust as per design
+  scaffoldBackgroundColor: Colors.white,
   textTheme: _textTheme.apply(
-    displayColor: Colors.black, // Adjust as per design
-    bodyColor: Colors.black, // Adjust as per design
+    displayColor: Colors.black,
+    bodyColor: Colors.black,
   ),
-  // Define other theme properties as needed
 );

@@ -45,7 +45,7 @@ class ProfileViewModel extends ChangeNotifier {
     }
   }
 
-  void fetchContactSupportNumber() {
+  Future<void> fetchContactSupportNumber() async {
     // FirebaseDatabase database = FirebaseDatabase.instance;
     // final ref = FirebaseDatabase.instance.ref();
     // final snapshot = await ref.child('contactSupportNumber').get();
@@ -54,8 +54,19 @@ class ProfileViewModel extends ChangeNotifier {
     // } else {
     //     print('No data available.');
     // }
-
     contactSupportNumber = "+91 xxxxx xxxxx";
+
+    final docRef = db.collection("scrap").doc("contact");
+    try {
+      final doc = await docRef.get();
+      final data = doc.data() as Map<String, dynamic>;
+      contactSupportNumber = data['support'];
+      notifyListeners();
+    } catch (e) {
+      print("Error getting document: $e");
+      // Handle the error gracefully, e.g., set default values or throw an exception
+    }
+    notifyListeners();
   }
 
   Future<UserProfile> getUserProfile() async {
